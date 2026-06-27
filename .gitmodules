@@ -1,0 +1,7 @@
+[submodule "aledb-core"]
+	path = aledb-core
+	url = ../aledb-core
+
+[submodule "mutint-app"]
+	path = mutint-app
+	url = ../mutint-app

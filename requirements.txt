@@ -1,0 +1,5 @@
+# Install dependencies from all submodules first:
+#   pip install -r aledb-core/requirements.txt
+#   pip install -r mutint-app/requirements.txt
+#
+# mutint-specific additions (if any):
