@@ -8,3 +8,6 @@
 [submodule "aledb-fixation"]
 	path = aledb-fixation
 	url = ../aledb-fixation
+[submodule "aledb-converge"]
+	path = aledb-converge
+	url = ../aledb-converge
