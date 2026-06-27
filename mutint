@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+import configparser, os, subprocess, sys
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+_VENV = os.path.join(BASE_DIR, '.venv')
+_VENV_READY = os.path.join(_VENV, '.installed')
+
+_submodule_paths = []
+_gitmodules = os.path.join(BASE_DIR, '.gitmodules')
+if os.path.isfile(_gitmodules):
+    _cfg = configparser.ConfigParser()
+    _cfg.read(_gitmodules)
+    for _section in _cfg.sections():
+        _path = _cfg.get(_section, 'path', fallback=None)
+        if _path:
+            _full = os.path.join(BASE_DIR, _path)
+            _submodule_paths.append(_full)
+            if _full not in sys.path:
+                sys.path.append(_full)
+
+
+def _install():
+    if not os.path.isdir(_VENV):
+        print("Creating virtual environment...")
+        subprocess.check_call([sys.executable, '-m', 'venv', _VENV])
+    pip = os.path.join(_VENV, 'bin', 'pip')
+    for full in _submodule_paths:
+        req = os.path.join(full, 'requirements.txt')
+        if os.path.isfile(req):
+            print(f"Installing {os.path.relpath(full, BASE_DIR)}/requirements.txt...")
+            subprocess.check_call([pip, 'install', '-r', req])
+    root_req = os.path.join(BASE_DIR, 'requirements.txt')
+    if os.path.isfile(root_req):
+        print("Installing requirements.txt...")
+        subprocess.check_call([pip, 'install', '-r', root_req])
+    open(_VENV_READY, 'w').close()
+    print("\nInstallation complete.")
+
+
+if len(sys.argv) > 1 and sys.argv[1] == 'install':
+    _install()
+else:
+    # Auto-install and re-exec under venv if not already inside it.
+    if os.path.normpath(sys.prefix) != os.path.normpath(_VENV):
+        if not os.path.isfile(_VENV_READY):
+            _install()
+        _venv_python = os.path.join(_VENV, 'bin', 'python')
+        os.execv(_venv_python, [_venv_python] + sys.argv)
+
+    from aledb_common.cli import manage
+    if __name__ == '__main__':
+        manage()
