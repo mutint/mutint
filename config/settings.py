@@ -49,5 +49,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Add each additional app below.
 INSTALLED_APPS = INSTALLED_APPS + [
     'mutint_app',
+    'aledb_fixation',
     # 'another_app',
 ]

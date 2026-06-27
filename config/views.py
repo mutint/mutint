@@ -13,3 +13,4 @@ _mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_mod)
 
 protected_file_serve = _mod.protected_file_serve
+show_amplifiction_data = _mod.show_amplifiction_data
