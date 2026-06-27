@@ -1,5 +1,33 @@
-.venv/
-*.sqlite3
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyd
+*.pyo
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Django
+*.sqlite3
+local_settings.py
 static/
+media/
+*.log
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Environment / secrets
+.env
+.env.*
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
