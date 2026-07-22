@@ -4,7 +4,7 @@ __pycache__/
 *.pyd
 *.pyo
 
-# Virtual environment
+# Managed environments — env/ holds the venv (env/main) and any future venvs/conda envs
 .venv/
 venv/
 env/

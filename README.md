@@ -29,7 +29,7 @@ git submodule update --init
 ```
 
 On first run, `./mutint start` will automatically:
-1. Create a Python virtual environment (`.venv/`)
+1. Create a Python virtual environment (`env/main/`)
 2. Install all dependencies from submodule requirements files
 3. Run database migrations (SQLite, no external database needed)
 4. Create a default admin user (`admin` / `admin`)

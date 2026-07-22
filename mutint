@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import configparser, os, subprocess, sys
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-_VENV = os.path.join(BASE_DIR, '.venv')
+_VENV = os.path.join(BASE_DIR, 'env', 'main')
 _VENV_READY = os.path.join(_VENV, '.installed')
 
 _submodule_paths = []
@@ -22,6 +22,7 @@ if os.path.isfile(_gitmodules):
 def _install():
     if not os.path.isdir(_VENV):
         print("Creating virtual environment...")
+        os.makedirs(os.path.dirname(_VENV), exist_ok=True)
         subprocess.check_call([sys.executable, '-m', 'venv', _VENV])
     pip = os.path.join(_VENV, 'bin', 'pip')
     for full in _submodule_paths:
