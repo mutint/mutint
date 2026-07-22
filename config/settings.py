@@ -54,10 +54,15 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # ── Auto-discover INSTALLED_APPS from submodule packages ─────────────────────
 # Any immediate subdirectory of a submodule that is a Django app package
 # (has __init__.py + apps.py) and is not already in INSTALLED_APPS is added.
-# aledb-core's apps are already present via base settings above and are skipped.
+# The aledb-core submodule is skipped entirely: all of its apps are provided by
+# base settings above, and re-scanning it would pull in packages base settings
+# deliberately omits (e.g. aledb_accounts alongside aledb_accounts_noauth).
 
+_core_submodule = os.path.join(BASE_DIR, 'aledb-core')
 _core_apps = set(INSTALLED_APPS)
 for _subdir_path in _submodule_paths:
+    if _subdir_path == _core_submodule:
+        continue
     if not os.path.isdir(_subdir_path):
         continue
     for _name in sorted(os.listdir(_subdir_path)):
