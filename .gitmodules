@@ -1,6 +1,7 @@
 [submodule "aledb-core"]
 	path = aledb-core
 	url = ../aledb-core
+	branch = master
 
 [submodule "mutint-app"]
 	path = mutint-app
