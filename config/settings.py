@@ -73,3 +73,16 @@ for _subdir_path in _submodule_paths:
                 and _name not in _core_apps):
             INSTALLED_APPS = INSTALLED_APPS + [_name]
             _core_apps.add(_name)
+
+
+# ── MutInt's identity ─────────────────────────────────────────────────────────
+# aledb-core is unbranded: without this the sidebar carries no name and `/` is the
+# project list. MutInt is a collater and contributes no UI of its own, but it is
+# still the thing you are looking at, so it names itself here. No logo and no
+# home/splash.html, so there is no icon and `/` stays the project list.
+from mutint_app.version import NAME as _MUTINT_NAME, __version__ as _MUTINT_VERSION  # noqa: E402
+
+ALEDB_BRANDING = {
+    'name': _MUTINT_NAME,
+    'version': 'v%s' % _MUTINT_VERSION,
+}
