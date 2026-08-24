@@ -6,6 +6,9 @@
 [submodule "mutint-app"]
 	path = mutint-app
 	url = ../mutint-app
+[submodule "aledb-compare"]
+	path = aledb-compare
+	url = ../aledb-compare
 [submodule "aledb-fixation"]
 	path = aledb-fixation
 	url = ../aledb-fixation
