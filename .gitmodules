@@ -15,3 +15,6 @@
 [submodule "aledb-converge"]
 	path = aledb-converge
 	url = ../aledb-converge
+[submodule "aledb-phylogeny"]
+	path = aledb-phylogeny
+	url = ../aledb-phylogeny
