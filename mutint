@@ -4,6 +4,14 @@ import configparser, os, subprocess, sys
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 _VENV = os.path.join(BASE_DIR, 'env', 'main')
 _VENV_READY = os.path.join(_VENV, '.installed')
+# env/ is a container for managed environments: env/main is the Python venv, env/tools the
+# external binaries any component asked for in its tools.txt.
+_TOOLS = os.path.join(BASE_DIR, 'env', 'tools')
+_TOOLS_READY = os.path.join(_TOOLS, '.installed')
+# micromamba lives beside the environment it builds, never inside it: micromamba refuses to
+# create into a prefix that already holds a non-conda folder, so a copy under env/tools/bin
+# makes the solve abort with "Non-conda folder exists at prefix".
+_MAMBA_DIR = os.path.join(BASE_DIR, 'env', 'micromamba')
 
 _submodule_paths = []
 _gitmodules = os.path.join(BASE_DIR, '.gitmodules')
@@ -17,6 +25,89 @@ if os.path.isfile(_gitmodules):
             _submodule_paths.append(_full)
             if _full not in sys.path:
                 sys.path.append(_full)
+
+# Where the code finds the binaries at runtime. Exported here rather than derived in settings
+# because settings cannot know it: an assembled project reaches get_base_settings() through
+# aledb-core's config/defaults.py, which passes the *aledb-core* directory as base_dir, so
+# anything derived there points inside the submodule -- the same trap templates/ and
+# staticfiles/ have to work around. This script is the one place that knows the project root.
+# os.execv carries the current environment, so this survives the re-exec below.
+os.environ.setdefault('ALEDB_TOOLS_DIR', _TOOLS)
+
+_MICROMAMBA_PLATFORMS = {
+    ('Darwin', 'arm64'): 'osx-arm64',
+    ('Darwin', 'x86_64'): 'osx-64',
+    ('Linux', 'x86_64'): 'linux-64',
+    ('Linux', 'aarch64'): 'linux-aarch64',
+}
+
+
+def _tool_specs():
+    """Conda package specs from every component's tools.txt, in .gitmodules order.
+
+    Discovered exactly the way requirements.txt already is, and for the same reason: a
+    component declares what it needs beside its own code, and nothing central lists them.
+    This cannot be a Django registry -- installation happens before Django exists.
+    """
+    specs = []
+    for full in _submodule_paths + [BASE_DIR]:
+        path = os.path.join(full, 'tools.txt')
+        if not os.path.isfile(path):
+            continue
+        with open(path) as handle:
+            for line in handle:
+                line = line.split('#', 1)[0].strip()
+                if line and line not in specs:
+                    specs.append(line)
+    return specs
+
+
+def _micromamba():
+    """Path to micromamba inside env/tools, downloading the static binary if need be.
+
+    A single self-contained executable, so this needs no conda on the host and touches
+    nothing outside env/.
+    """
+    import platform, tarfile, urllib.request
+
+    exe = os.path.join(_MAMBA_DIR, 'bin', 'micromamba')
+    if os.path.isfile(exe):
+        return exe
+
+    key = (platform.system(), platform.machine())
+    target = _MICROMAMBA_PLATFORMS.get(key)
+    if target is None:
+        raise SystemExit(
+            "No micromamba build known for %s/%s. Install the tools in tools.txt yourself "
+            "and put them on PATH; aledb-core falls back to PATH when env/tools has no "
+            "copy." % key)
+
+    url = 'https://micro.mamba.pm/api/micromamba/%s/latest' % target
+    print("Downloading micromamba for %s..." % target)
+    os.makedirs(_MAMBA_DIR, exist_ok=True)
+    archive = os.path.join(_MAMBA_DIR, 'micromamba.tar.bz2')
+    urllib.request.urlretrieve(url, archive)
+    with tarfile.open(archive, 'r:bz2') as tar:
+        member = tar.getmember('bin/micromamba')
+        tar.extract(member, _MAMBA_DIR)
+    os.remove(archive)
+    os.chmod(exe, 0o755)
+    return exe
+
+
+def _install_tools():
+    specs = _tool_specs()
+    if not specs:
+        return
+    if os.path.isfile(_TOOLS_READY):
+        return
+
+    print("Installing external tools (%s)..." % ', '.join(specs))
+    subprocess.check_call([_micromamba(), 'create', '-y', '-p', _TOOLS,
+                           '-c', 'conda-forge', '-c', 'bioconda'] + specs)
+    # Written last, as env/main/.installed is: a solve that dies partway must not look
+    # complete on the next run.
+    open(_TOOLS_READY, 'w').close()
 
 
 def _install():
@@ -35,6 +126,7 @@ def _install():
         print("Installing requirements.txt...")
         subprocess.check_call([pip, 'install', '-r', root_req])
     open(_VENV_READY, 'w').close()
+    _install_tools()
     print("\nInstallation complete.")
 
 
@@ -45,6 +137,9 @@ else:
     if os.path.normpath(sys.prefix) != os.path.normpath(_VENV):
         if not os.path.isfile(_VENV_READY):
             _install()
+        # A checkout whose venv predates tools.txt, or whose earlier solve failed, still
+        # gets one -- the venv sentinel says nothing about the tools.
+        _install_tools()
         _venv_python = os.path.join(_VENV, 'bin', 'python')
         os.execv(_venv_python, [_venv_python] + sys.argv)
 
