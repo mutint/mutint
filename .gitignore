@@ -38,3 +38,7 @@ build/
 .claude/worktrees/
 .claude/settings.local.json
 .claude/.DS_Store
+
+# `./mutint docs` build tree and output.
+/.docs-build/
+/site/
