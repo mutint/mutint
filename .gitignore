@@ -10,7 +10,13 @@ venv/
 env/
 
 # Django
+# The local database and the sidecar files SQLite writes beside it. Naming only
+# *.sqlite3 left a 320 KB *.sqlite3-journal sitting untracked in the working tree,
+# one interrupted write away from being committed. aledb-core lists the same three.
 *.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
 local_settings.py
 static/
 media/
