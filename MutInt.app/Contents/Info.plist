@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key>
+	<string>MutInt</string>
+	<key>CFBundleDisplayName</key>
+	<string>MutInt</string>
+	<key>CFBundleExecutable</key>
+	<string>MutInt</string>
+	<key>CFBundleIdentifier</key>
+	<string>edu.utexas.barricklab.mutint.launcher</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.13</string>
+	<!-- The sentence macOS shows in the "MutInt wants to control Terminal" prompt. The
+	     app drives Terminal on purpose: that window is where the first run's install
+	     log, the admin credentials and any failure are visible. -->
+	<key>NSAppleEventsUsageDescription</key>
+	<string>MutInt opens a Terminal window so you can watch the server start.</string>
+</dict>
+</plist>

@@ -25,10 +25,40 @@ git submodule update --init --recursive
 
 That installs a shared virtualenv at `env/main/` from every component's `requirements.txt`,
 installs any non-Python tools declared in a `tools.txt` into `env/tools/`, migrates, creates an
-admin user, opens a browser and runs the server.
+admin user, opens a browser (via macOS `open`, so on Linux you go to the URL yourself) and runs
+the server.
 
 The entry script discovers submodules from `.gitmodules` and re-execs under the venv, so there
 is nothing to activate.
+
+## Starting it from the Finder
+
+Two files in the checkout do the same thing without a terminal:
+
+- **`Start MutInt.command`** — double-click it and macOS opens a Terminal window and runs
+  `./mutint start` in it.
+- **`MutInt.app`** — the same launcher with an application's name and icon, so it can sit in
+  the Dock. All it does is open the `.command` above in Terminal; the first time, macOS asks
+  once for permission to control Terminal.
+
+The Terminal window is the point rather than an artifact. A first launch spends several minutes
+installing the venv and the external tools before Django is importable, and the admin
+credentials are printed once — a launcher that hid that would make a slow success look like a
+hang and a failure look like nothing. **Ctrl-C in that window stops the server**, and closing
+the window will offer to.
+
+Double-clicking again while MutInt is already running just opens the browser: the dev server
+is fixed to port 8000, so a second one would only collide with the first.
+
+!!! note "Both are plain text, and neither is signed"
+
+    `MutInt.app` is a folder with an `Info.plist` and a shell script in it — there is no build
+    step, and it has no icon of its own because MutInt ships no logo. Dropping a
+    `Contents/Resources/MutInt.icns` in and naming it under a `CFBundleIconFile` key is all one
+    would take.
+
+    Both rely on their executable bit, which git records. If Finder opens one in a text editor
+    instead of running it, `chmod +x` is the fix.
 
 ## Everyday commands
 

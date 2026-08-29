@@ -1,0 +1,16 @@
+#!/bin/sh
+# The bundle exists for the icon and the Dock; the .command beside it does the work.
+# Handing off through Terminal rather than running the server here is what keeps the
+# install log and any failure visible -- an .app has no window of its own.
+#
+# ../../.. walks MacOS -> Contents -> MutInt.app -> the project root, so the app finds
+# its .command wherever the checkout lives, with no path baked in.
+here="$(cd "$(dirname "$0")/../../.." && pwd)"
+osascript - "$here/Start MutInt.command" <<'APPLESCRIPT'
+on run argv
+    tell application "Terminal"
+        activate
+        do script quoted form of (item 1 of argv)
+    end tell
+end run
+APPLESCRIPT
