@@ -18,3 +18,6 @@
 [submodule "aledb-phylogeny"]
 	path = aledb-phylogeny
 	url = ../aledb-phylogeny
+[submodule "aledb-needle"]
+	path = aledb-needle
+	url = ../aledb-needle
