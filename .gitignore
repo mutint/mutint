@@ -54,3 +54,6 @@ build/
 # ignored this; MutInt did not need to, because its store was inside its own aledb-core
 # submodule until ALEDB_STORE_DIR was re-pointed at the project root.
 /aledb_store/
+# ...and one moved aside, which is what a migration reset asks for: primary keys restart
+# at 1 while store paths are derived from them, so the old files have to leave the way.
+/aledb_store.*/
