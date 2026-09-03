@@ -86,3 +86,12 @@ ALEDB_BRANDING = {
     'name': _MUTINT_NAME,
     'version': 'v%s' % _MUTINT_VERSION,
 }
+
+# Re-pointed at the project root, for the same reason templates/ and staticfiles/ are: this
+# project reaches get_base_settings() through aledb-core's config/defaults.py, which passes the
+# *aledb-core* directory as base_dir. Without this line MutInt's uploaded references, .gd files
+# and alignments are written to `mutint/aledb-core/aledb_store` -- inside a submodule, which is
+# a directory `submodule update` is entitled to churn, and which is not where anybody would
+# look for them. aledb-deploy has always set this; MutInt never did.
+ALEDB_STORE_DIR = os.environ.get(
+    'ALEDB_STORE_DIR', os.path.join(BASE_DIR, 'aledb_store'))

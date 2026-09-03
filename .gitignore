@@ -48,3 +48,9 @@ build/
 # `./mutint docs` build tree and output.
 /.docs-build/
 /site/
+
+# The managed file store: uploaded .gd files, reference genomes, alignments and BigWigs,
+# keyed by database id. Runtime data this project owns, not source. aledb-deploy has always
+# ignored this; MutInt did not need to, because its store was inside its own aledb-core
+# submodule until ALEDB_STORE_DIR was re-pointed at the project root.
+/aledb_store/

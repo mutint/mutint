@@ -3,16 +3,16 @@ from .settings import *  # noqa: F401, F403
 
 DEBUG = True
 
-# Only the file name. **Do not restate ENGINE or OPTIONS here.**
+# **Nothing about the database belongs here any more.**
 #
-# This block used to spell out `'ENGINE': 'django.db.backends.sqlite3'` and no OPTIONS,
-# which silently overrode both. The effect was that this project -- the one people
-# actually import into -- ran on the stock backend with a 5s busy timeout while
-# aledb-core had moved to `aledb_common.db.sqlite_immediate` and 30s, so it did not
-# get the fix for imports losing samples to `database is locked` at all. Nothing
-# reported that; `./mutint check` cannot see it, and it took a test asserting the
-# engine to find it.
+# This block used to name a SQLite file, because each project kept its own. There is nothing
+# left to name: the entry script provisions a PostgreSQL cluster per checkout under env/ and
+# exports ALEDB_DB_HOST/NAME/USER, and aledb-core's base settings read those -- with the name
+# derived from the checkout's own directory, so the three projects differ by default even when
+# pointed at one external server.
 #
-# Overriding one key of the inherited dict is what keeps this from happening again:
-# whatever aledb-core decides the backend should be, this follows.
-DATABASES['default']['NAME'] = os.path.join(BASE_DIR, 'mutint_local.sqlite3')  # noqa: F405
+# It is worth knowing what this file used to get wrong, because the shape of the mistake
+# outlives the setting. It once spelled out the whole DATABASES dict, silently overriding the
+# engine and its options, so this project -- the one people actually import into -- ran a
+# configuration aledb-core had moved on from. `check` passes either way; it took a test
+# asserting the live connection to find it. That test still exists, in Postgres form.

@@ -233,8 +233,93 @@ def _install():
     print("\nInstallation complete.")
 
 
-if len(sys.argv) > 1 and sys.argv[1] == 'install':
+# Commands that must not start a database: they either do not need one, or exist to act on
+# the server itself. A deny-list rather than an allow-list, so a new command that needs the
+# database gets it, instead of failing in a way nobody expects.
+_NO_DATABASE = frozenset(['install', 'db', 'version', 'docs', 'help', '--help', '-h'])
+
+
+def _pg():
+    """aledb_common/pg.py, loaded by path.
+
+    By path because this runs before the venv exists and before Django is importable -- the
+    same trick mutint/config/settings.py uses to load aledb-core's config/defaults.py, and
+    discovered the way tools.txt already is, so it resolves standalone and assembled with
+    nothing to configure.
+    """
+    import importlib.util
+
+    for full in _submodule_paths + [BASE_DIR]:
+        path = os.path.join(full, 'aledb_common', 'pg.py')
+        if os.path.isfile(path):
+            spec = importlib.util.spec_from_file_location('_aledb_pg', path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            return module
+    raise SystemExit("Cannot find aledb_common/pg.py. Is aledb-core present?")
+
+
+def _ensure_database(own=True):
+    """Bring this checkout's database up, and export where it is.
+
+    Exported rather than derived in settings, for the reason ALEDB_TOOLS_DIR is: an assembled
+    project reaches get_base_settings() through aledb-core's config/defaults.py, which passes
+    the *aledb-core* directory as base_dir, so anything derived there points inside the
+    submodule. This script is the one place that knows the project root.
+    """
+    pg = _pg()
+    if pg.is_external():
+        return                      # somebody else's server; we manage nothing
+    cluster = pg.Cluster(BASE_DIR)
+    try:
+        cluster.ensure(_micromamba(), own=own)
+    except pg.PostgresError as exc:
+        raise SystemExit("\n%s\n" % exc)
+    os.environ.update(cluster.env())
+
+
+def _db_command(args):
+    pg = _pg()
+    cluster = pg.Cluster(BASE_DIR)
+    verb = args[0] if args else 'status'
+
+    if verb == 'status':
+        print('\n'.join(cluster.describe()))
+    elif verb == 'start':
+        # Deliberately unowned: an explicit `db start` is how somebody keeps one server up
+        # across several commands, so it must outlive this one.
+        _ensure_database(own=False)
+        print('\n'.join(cluster.describe()))
+    elif verb == 'stop':
+        if pg.is_external():
+            raise SystemExit("ALEDB_DB_HOST is set, so this manages no server.")
+        print("Stopped." if cluster.stop() else "Not running.")
+    elif verb == 'reset':
+        if pg.is_external():
+            raise SystemExit("ALEDB_DB_HOST is set, so this manages no server.")
+        if '--yes' not in args:
+            raise SystemExit(
+                "`db reset` destroys this checkout's database and everything in it.\n"
+                "Re-run it as `db reset --yes` if that is what you want.\n\n"
+                "Note that primary keys restart at 1 while the file store does not: paths\n"
+                "under ALEDB_STORE_DIR are derived from them, so the first import after a\n"
+                "reset writes over the previous installation's stored references and\n"
+                "alignments. Move that directory aside first.")
+        import shutil
+        cluster.stop()
+        shutil.rmtree(cluster.data, ignore_errors=True)
+        _ensure_database(own=False)
+        print("Reset. The database is empty and needs migrating.")
+    else:
+        raise SystemExit("Usage: db [status|start|stop|reset --yes]")
+
+
+_verb = sys.argv[1] if len(sys.argv) > 1 else None
+
+if _verb == 'install':
     _install()
+elif _verb == 'db':
+    _db_command(sys.argv[2:])
 else:
     # Auto-install and re-exec under venv if not already inside it.
     if os.path.normpath(sys.prefix) != os.path.normpath(_VENV):
@@ -243,8 +328,54 @@ else:
         # A checkout whose venv predates tools.txt, or whose earlier solve failed, still
         # gets one -- the venv sentinel says nothing about the tools.
         _install_tools()
+        if _verb not in _NO_DATABASE:
+            _ensure_database()
         _venv_python = os.path.join(_VENV, 'bin', 'python')
+        # execv carries the environment, so what _ensure_database exported survives -- and so
+        # does the pid, which is what lets the shutdown hook below know it is the owner.
         os.execv(_venv_python, [_venv_python] + sys.argv)
+
+    # The shutdown hook, and it has exactly two gates. Both are load-bearing.
+    #
+    # It is registered *here*, after the execv above, because execv replaces the process
+    # image: anything registered before it is destroyed along with the interpreter that
+    # registered it.
+    #
+    # And it is gated on RUN_MAIN, because runserver's autoreloader does not swap code into
+    # the running process -- django.utils.autoreload.restart_with_reloader re-executes this
+    # whole command line in a loop, so an ungated hook would stop the database on every
+    # code reload, mid-session, presenting as connections dropping while you edit rather
+    # than as anything to do with a hook. RUN_MAIN is set only in the reloader's child;
+    # aledb_common/management/commands/start.py gates on it for the same class of problem.
+    #
+    # The pid check is the belt to that braces: the owner recorded the pid that started the
+    # server, execv preserved it, and the reloader's child has a different one.
+    if (os.environ.get('ALEDB_DB_MANAGED') == '1'
+            and os.environ.get('RUN_MAIN') != 'true'):
+        _owned = _pg().Cluster(BASE_DIR)
+        if _owned.owned_by_me():
+            import atexit
+            import signal
+
+            atexit.register(_owned.stop_if_owned)
+
+            def _terminate(signum, frame):
+                # atexit runs on a normal exit and on KeyboardInterrupt, but not on a signal
+                # unless something turns it into one. SIGKILL cannot be caught at all, which
+                # is why an abandoned server is adopted by the next invocation rather than
+                # treated as an error.
+                #
+                # Under `runserver` this handler is replaced: django.utils.autoreload's
+                # run_with_reloader installs its own SIGTERM handler, which calls sys.exit(0)
+                # -- so atexit still runs and the database still stops. It is the commands
+                # that are *not* runserver that need this one.
+                raise SystemExit(128 + signum)
+
+            for _sig in (signal.SIGTERM, signal.SIGHUP):
+                try:
+                    signal.signal(_sig, _terminate)
+                except (ValueError, OSError):
+                    pass
 
     from aledb_common.cli import manage
     if __name__ == '__main__':
