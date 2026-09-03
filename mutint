@@ -16,9 +16,12 @@ _MAMBA_DIR = os.path.join(BASE_DIR, 'env', 'micromamba')
 # host, because the host's python3 is whatever the machine happens to have -- 3.9 on macOS
 # Sonoma, which no supported Django accepts any more -- and "install a newer Python first" is
 # not a first step this suite asks anybody for. Everything else here already arrives this way.
+#
+# Bumping this rebuilds env/main, because a venv cannot be re-based on a different interpreter
+# and the fingerprint below covers this spec for exactly that reason.
 _PY_DIR = os.path.join(BASE_DIR, 'env', 'python')
 _PY_READY = os.path.join(_PY_DIR, '.installed')
-_PYTHON_SPEC = 'python=3.12.*'
+_PYTHON_SPEC = 'python=3.13.*'
 
 _submodule_paths = []
 _gitmodules = os.path.join(BASE_DIR, '.gitmodules')
@@ -169,19 +172,28 @@ def _install_python():
     if os.path.isfile(exe) and _sentinel_matches(_PY_READY, _PYTHON_SPEC):
         return exe
     print("Installing Python (%s)..." % _PYTHON_SPEC)
-    subprocess.check_call([_micromamba(), 'create', '-y', '-p', _PY_DIR,
+    action = 'install' if os.path.isdir(os.path.join(_PY_DIR, 'conda-meta')) else 'create'
+    subprocess.check_call([_micromamba(), action, '-y', '-p', _PY_DIR,
                            '-c', 'conda-forge', _PYTHON_SPEC])
     _write_sentinel(_PY_READY, _PYTHON_SPEC)
     return exe
 
 
-def _venv_base(venv):
-    """The interpreter an existing venv was built from, or None."""
+def _python_version(python):
+    """`major.minor` of an interpreter, as a string."""
+    out = subprocess.check_output(
+        [python, '-c', 'import sys; sys.stdout.write("%d.%d" % sys.version_info[:2])'])
+    return out.decode('utf-8').strip()
+
+
+def _venv_version(venv):
+    """`major.minor` an existing venv was built for, from its pyvenv.cfg, or None."""
     try:
         with open(os.path.join(venv, 'pyvenv.cfg')) as handle:
             for line in handle:
-                if line.split('=')[0].strip() == 'home':
-                    return line.split('=', 1)[1].strip()
+                key, _, value = line.partition('=')
+                if key.strip() == 'version':
+                    return '.'.join(value.strip().split('.')[:2])
     except (IOError, OSError):
         pass
     return None
@@ -192,7 +204,13 @@ def _install():
     # A venv cannot be re-based on a different interpreter, so an interpreter change means
     # building a new one. Left alone, a checkout that already has env/main would keep running
     # the old Python for ever and the upgrade would land for nobody.
-    if os.path.isdir(_VENV) and _venv_base(_VENV) != os.path.dirname(python):
+    #
+    # Compared by *version*, not by path, and that distinction is the whole of this check:
+    # env/main/bin/python is a symlink into env/python, so upgrading that prefix in place
+    # re-points the venv at the new interpreter while its packages stay in the old
+    # lib/pythonX.Y. The venv then has no pip and no Django and reports the new version
+    # perfectly happily. A path comparison sees nothing wrong, because nothing moved.
+    if os.path.isdir(_VENV) and _venv_version(_VENV) != _python_version(python):
         print("Rebuilding the virtual environment on %s..." % _PYTHON_SPEC)
         import shutil
         shutil.rmtree(_VENV)
