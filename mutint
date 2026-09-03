@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import configparser, os, subprocess, sys
+import configparser, hashlib, os, subprocess, sys
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 _VENV = os.path.join(BASE_DIR, 'env', 'main')
@@ -12,6 +12,13 @@ _TOOLS_READY = os.path.join(_TOOLS, '.installed')
 # create into a prefix that already holds a non-conda folder, so a copy under env/tools/bin
 # makes the solve abort with "Non-conda folder exists at prefix".
 _MAMBA_DIR = os.path.join(BASE_DIR, 'env', 'micromamba')
+# The interpreter env/main is built from. Provisioned by micromamba rather than taken from the
+# host, because the host's python3 is whatever the machine happens to have -- 3.9 on macOS
+# Sonoma, which no supported Django accepts any more -- and "install a newer Python first" is
+# not a first step this suite asks anybody for. Everything else here already arrives this way.
+_PY_DIR = os.path.join(BASE_DIR, 'env', 'python')
+_PY_READY = os.path.join(_PY_DIR, '.installed')
+_PYTHON_SPEC = 'python=3.12.*'
 
 _submodule_paths = []
 _gitmodules = os.path.join(BASE_DIR, '.gitmodules')
@@ -95,26 +102,104 @@ def _micromamba():
     return exe
 
 
+def _digest(payload):
+    return hashlib.sha256(payload.encode('utf-8')).hexdigest()
+
+
+def _sentinel_matches(path, payload):
+    """Whether the sentinel at `path` records exactly this payload.
+
+    A sentinel holds a fingerprint of what built the environment, not merely the fact that
+    something did. Checked by existence, as these were, **adding a line to a tools.txt or a
+    requirements.txt was a silent no-op for every checkout that had ever run the installer** --
+    which is every checkout anybody actually works in. The failure arrives much later, as a
+    missing binary or an ImportError, with nothing pointing back at the file that was edited.
+    """
+    try:
+        with open(path) as handle:
+            return handle.read().strip() == _digest(payload)
+    except (IOError, OSError):
+        return False
+
+
+def _write_sentinel(path, payload):
+    with open(path, 'w') as handle:
+        handle.write(_digest(payload))
+
+
+def _requirements_payload():
+    """What env/main is built from: the interpreter spec, then every requirements.txt.
+
+    Contents rather than paths, so bumping a pin re-installs. The path is included too, or two
+    components swapping identical files would look like a change. The interpreter leads, so
+    changing it invalidates the venv the same way a changed pin does.
+    """
+    parts = [_PYTHON_SPEC]
+    for full in _submodule_paths + [BASE_DIR]:
+        req = os.path.join(full, 'requirements.txt')
+        if os.path.isfile(req):
+            with open(req) as handle:
+                parts.append(os.path.relpath(req, BASE_DIR) + '\n' + handle.read())
+    return '\n'.join(parts)
+
+
 def _install_tools():
     specs = _tool_specs()
     if not specs:
         return
-    if os.path.isfile(_TOOLS_READY):
+    payload = '\n'.join(specs)
+    if _sentinel_matches(_TOOLS_READY, payload):
         return
 
     print("Installing external tools (%s)..." % ', '.join(specs))
-    subprocess.check_call([_micromamba(), 'create', '-y', '-p', _TOOLS,
+    # `install` rather than `create` once the prefix exists, so adding a spec adds a package
+    # instead of failing on a directory that is already there. Note neither one *removes* a
+    # spec that was deleted from a tools.txt -- `rm -rf env/tools` is how you do that.
+    action = 'install' if os.path.isdir(os.path.join(_TOOLS, 'conda-meta')) else 'create'
+    subprocess.check_call([_micromamba(), action, '-y', '-p', _TOOLS,
                            '-c', 'conda-forge', '-c', 'bioconda'] + specs)
     # Written last, as env/main/.installed is: a solve that dies partway must not look
     # complete on the next run.
-    open(_TOOLS_READY, 'w').close()
+    _write_sentinel(_TOOLS_READY, payload)
+
+
+def _install_python():
+    """Path to the managed interpreter, provisioning it if need be."""
+    exe = os.path.join(_PY_DIR, 'bin', 'python')
+    if os.path.isfile(exe) and _sentinel_matches(_PY_READY, _PYTHON_SPEC):
+        return exe
+    print("Installing Python (%s)..." % _PYTHON_SPEC)
+    subprocess.check_call([_micromamba(), 'create', '-y', '-p', _PY_DIR,
+                           '-c', 'conda-forge', _PYTHON_SPEC])
+    _write_sentinel(_PY_READY, _PYTHON_SPEC)
+    return exe
+
+
+def _venv_base(venv):
+    """The interpreter an existing venv was built from, or None."""
+    try:
+        with open(os.path.join(venv, 'pyvenv.cfg')) as handle:
+            for line in handle:
+                if line.split('=')[0].strip() == 'home':
+                    return line.split('=', 1)[1].strip()
+    except (IOError, OSError):
+        pass
+    return None
 
 
 def _install():
+    python = _install_python()
+    # A venv cannot be re-based on a different interpreter, so an interpreter change means
+    # building a new one. Left alone, a checkout that already has env/main would keep running
+    # the old Python for ever and the upgrade would land for nobody.
+    if os.path.isdir(_VENV) and _venv_base(_VENV) != os.path.dirname(python):
+        print("Rebuilding the virtual environment on %s..." % _PYTHON_SPEC)
+        import shutil
+        shutil.rmtree(_VENV)
     if not os.path.isdir(_VENV):
         print("Creating virtual environment...")
         os.makedirs(os.path.dirname(_VENV), exist_ok=True)
-        subprocess.check_call([sys.executable, '-m', 'venv', _VENV])
+        subprocess.check_call([python, '-m', 'venv', _VENV])
     pip = os.path.join(_VENV, 'bin', 'pip')
     for full in _submodule_paths:
         req = os.path.join(full, 'requirements.txt')
@@ -125,7 +210,7 @@ def _install():
     if os.path.isfile(root_req):
         print("Installing requirements.txt...")
         subprocess.check_call([pip, 'install', '-r', root_req])
-    open(_VENV_READY, 'w').close()
+    _write_sentinel(_VENV_READY, _requirements_payload())
     _install_tools()
     print("\nInstallation complete.")
 
@@ -135,7 +220,7 @@ if len(sys.argv) > 1 and sys.argv[1] == 'install':
 else:
     # Auto-install and re-exec under venv if not already inside it.
     if os.path.normpath(sys.prefix) != os.path.normpath(_VENV):
-        if not os.path.isfile(_VENV_READY):
+        if not _sentinel_matches(_VENV_READY, _requirements_payload()):
             _install()
         # A checkout whose venv predates tools.txt, or whose earlier solve failed, still
         # gets one -- the venv sentinel says nothing about the tools.
