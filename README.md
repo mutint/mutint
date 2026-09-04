@@ -48,7 +48,7 @@ The `./mutint` script works like `./aledb` in aledb-core — no manual venv acti
 ./mutint runserver
 ./mutint shell
 ./mutint createsuperuser
-./mutint upload /path/to/experiment   # upload ALE experiments
+./mutint import /path/to/data --project P --experiment E --person alice
 ./mutint install                      # reinstall/update all dependencies
 ```
 
