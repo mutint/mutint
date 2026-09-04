@@ -308,6 +308,17 @@ def _db_command(args):
         import shutil
         cluster.stop()
         shutil.rmtree(cluster.data, ignore_errors=True)
+        # `ignore_errors` hides the one failure that actually happens here. On macOS,
+        # opening `env/` in Finder leaves a `.DS_Store` inside `pgdata`; rmtree can fail on
+        # it and say nothing, and `initdb` then refuses the directory with "exists but is
+        # not empty ... perhaps due to it being a mount point", which names neither the file
+        # nor the reset that left it. Checking here costs one stat and turns that into a
+        # sentence about the thing in the way.
+        if os.path.exists(cluster.data):
+            leftovers = sorted(os.listdir(cluster.data))
+            raise SystemExit(
+                "Could not remove %s.\nStill there: %s\nDelete it by hand and re-run."
+                % (cluster.data, ", ".join(leftovers) or "(nothing listable)"))
         _ensure_database(own=False)
         print("Reset. The database is empty and needs migrating.")
     else:
