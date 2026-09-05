@@ -1,18 +1,21 @@
 """
 Base settings for the MutInt assembled project.
 
-Loads aledb-core defaults via importlib (to avoid the `config` namespace clash),
-then auto-discovers submodule directories from .gitmodules and extends
-INSTALLED_APPS with any Django app packages found in those directories.
+Inherits aledb-core's base settings by calling get_base_settings() directly, then
+auto-discovers submodule directories from .gitmodules and extends INSTALLED_APPS with
+any Django app packages found in those directories.
 
 To add a new app submodule, add it to .gitmodules — no edits here needed.
 """
 import configparser
-import importlib.util
 import os
 import sys
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Named once: it is both what base settings need in order to find aledb_common's static
+# assets, and the one submodule the INSTALLED_APPS scan below skips.
+_core_submodule = os.path.join(BASE_DIR, 'aledb-core')
 
 # ── Auto-discover submodule directories from .gitmodules ──────────────────────
 # Each submodule directory is appended (not inserted) so that `import config`
@@ -32,21 +35,21 @@ if os.path.isfile(_gitmodules):
                 sys.path.append(_full)
 
 # ── Inherit aledb-core base settings ─────────────────────────────────────────
-def _load_module(name, path):
-    spec = importlib.util.spec_from_file_location(name, path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
+# Called directly, rather than through aledb-core's config/defaults.py, which is how this
+# read before. That module passes *its own* directory as base_dir, so every setting derived
+# from the project root -- STATIC_ROOT, TEMPLATES' DIRS, STATICFILES_DIRS and ALEDB_STORE_DIR
+# -- came back pointing inside the submodule and had to be re-pointed by hand afterwards.
+# Three of those four re-pointings had been missed at least once across the two assembled
+# projects, and one of the misses put uploaded .gd files, BAMs and references somewhere
+# `submodule update` is entitled to churn. Passing BASE_DIR makes all four right by
+# construction, which is why nothing is re-pointed further down any more.
+#
+# Nothing is lost by skipping defaults.py: all it adds on top of get_base_settings() is
+# ROOT_URLCONF and WSGI_APPLICATION, and this project sets both itself. It must be imported
+# after the loop above, which is what puts aledb-core on sys.path.
+from aledb_common.base_settings import get_base_settings  # noqa: E402
 
-_core_defaults = _load_module(
-    '_aledb_core_defaults',
-    os.path.join(BASE_DIR, 'aledb-core', 'config', 'defaults.py'),
-)
-globals().update({k: getattr(_core_defaults, k) for k in dir(_core_defaults) if k.isupper()})
-
-# ── Reset settings that depend on project root ────────────────────────────────
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+globals().update(get_base_settings(BASE_DIR, aledb_core_dir=_core_submodule))
 
 ROOT_URLCONF = 'config.urls'
 WSGI_APPLICATION = 'config.wsgi.application'
@@ -58,7 +61,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # base settings above, and re-scanning it would pull in packages base settings
 # deliberately omits (e.g. aledb_accounts alongside aledb_accounts_noauth).
 
-_core_submodule = os.path.join(BASE_DIR, 'aledb-core')
 _core_apps = set(INSTALLED_APPS)
 for _subdir_path in _submodule_paths:
     if _subdir_path == _core_submodule:
@@ -86,12 +88,3 @@ ALEDB_BRANDING = {
     'name': _MUTINT_NAME,
     'version': 'v%s' % _MUTINT_VERSION,
 }
-
-# Re-pointed at the project root, for the same reason templates/ and staticfiles/ are: this
-# project reaches get_base_settings() through aledb-core's config/defaults.py, which passes the
-# *aledb-core* directory as base_dir. Without this line MutInt's uploaded references, .gd files
-# and alignments are written to `mutint/aledb-core/aledb_store` -- inside a submodule, which is
-# a directory `submodule update` is entitled to churn, and which is not where anybody would
-# look for them. aledb-deploy has always set this; MutInt never did.
-ALEDB_STORE_DIR = os.environ.get(
-    'ALEDB_STORE_DIR', os.path.join(BASE_DIR, 'aledb_store'))
