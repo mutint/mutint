@@ -12,7 +12,7 @@ env/
 # Django
 # The local database and the sidecar files SQLite writes beside it. Naming only
 # *.sqlite3 left a 320 KB *.sqlite3-journal sitting untracked in the working tree,
-# one interrupted write away from being committed. aledb-core lists the same three.
+# one interrupted write away from being committed. mutint-core lists the same three.
 *.sqlite3
 *.sqlite3-journal
 *.sqlite3-wal
@@ -50,10 +50,10 @@ build/
 /site/
 
 # The managed file store: uploaded .gd files, reference genomes, alignments and BigWigs,
-# keyed by database id. Runtime data this project owns, not source. aledb-deploy has always
-# ignored this; MutInt did not need to, because its store was inside its own aledb-core
-# submodule until ALEDB_STORE_DIR was re-pointed at the project root.
-/aledb_store/
+# keyed by database id. Runtime data this project owns, not source. aledb has always
+# ignored this; MutInt did not need to, because its store was inside its own mutint-core
+# submodule until MUTINT_STORE_DIR was re-pointed at the project root.
+/mutint_store/
 # ...and one moved aside, which is what a migration reset asks for: primary keys restart
 # at 1 while store paths are derived from them, so the old files have to leave the way.
-/aledb_store.*/
+/mutint_store.*/

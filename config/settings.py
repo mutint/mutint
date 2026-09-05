@@ -1,7 +1,7 @@
 """
 Base settings for the MutInt assembled project.
 
-Inherits aledb-core's base settings by calling get_base_settings() directly, then
+Inherits mutint-core's base settings by calling get_base_settings() directly, then
 auto-discovers submodule directories from .gitmodules and extends INSTALLED_APPS with
 any Django app packages found in those directories.
 
@@ -13,9 +13,9 @@ import sys
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Named once: it is both what base settings need in order to find aledb_common's static
+# Named once: it is both what base settings need in order to find mutint_common's static
 # assets, and the one submodule the INSTALLED_APPS scan below skips.
-_core_submodule = os.path.join(BASE_DIR, 'aledb-core')
+_core_submodule = os.path.join(BASE_DIR, 'mutint-core')
 
 # ── Auto-discover submodule directories from .gitmodules ──────────────────────
 # Each submodule directory is appended (not inserted) so that `import config`
@@ -34,10 +34,10 @@ if os.path.isfile(_gitmodules):
             if _full not in sys.path:
                 sys.path.append(_full)
 
-# ── Inherit aledb-core base settings ─────────────────────────────────────────
-# Called directly, rather than through aledb-core's config/defaults.py, which is how this
+# ── Inherit mutint-core base settings ─────────────────────────────────────────
+# Called directly, rather than through mutint-core's config/defaults.py, which is how this
 # read before. That module passes *its own* directory as base_dir, so every setting derived
-# from the project root -- STATIC_ROOT, TEMPLATES' DIRS, STATICFILES_DIRS and ALEDB_STORE_DIR
+# from the project root -- STATIC_ROOT, TEMPLATES' DIRS, STATICFILES_DIRS and MUTINT_STORE_DIR
 # -- came back pointing inside the submodule and had to be re-pointed by hand afterwards.
 # Three of those four re-pointings had been missed at least once across the two assembled
 # projects, and one of the misses put uploaded .gd files, BAMs and references somewhere
@@ -46,10 +46,10 @@ if os.path.isfile(_gitmodules):
 #
 # Nothing is lost by skipping defaults.py: all it adds on top of get_base_settings() is
 # ROOT_URLCONF and WSGI_APPLICATION, and this project sets both itself. It must be imported
-# after the loop above, which is what puts aledb-core on sys.path.
-from aledb_common.base_settings import get_base_settings  # noqa: E402
+# after the loop above, which is what puts mutint-core on sys.path.
+from mutint_common.base_settings import get_base_settings  # noqa: E402
 
-globals().update(get_base_settings(BASE_DIR, aledb_core_dir=_core_submodule))
+globals().update(get_base_settings(BASE_DIR, mutint_core_dir=_core_submodule))
 
 ROOT_URLCONF = 'config.urls'
 WSGI_APPLICATION = 'config.wsgi.application'
@@ -57,9 +57,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # ── Auto-discover INSTALLED_APPS from submodule packages ─────────────────────
 # Any immediate subdirectory of a submodule that is a Django app package
 # (has __init__.py + apps.py) and is not already in INSTALLED_APPS is added.
-# The aledb-core submodule is skipped entirely: all of its apps are provided by
+# The mutint-core submodule is skipped entirely: all of its apps are provided by
 # base settings above, and re-scanning it would pull in packages base settings
-# deliberately omits (e.g. aledb_accounts alongside aledb_accounts_noauth).
+# deliberately omits (e.g. mutint_accounts alongside mutint_accounts_noauth).
 
 _core_apps = set(INSTALLED_APPS)
 for _subdir_path in _submodule_paths:
@@ -78,13 +78,13 @@ for _subdir_path in _submodule_paths:
 
 
 # ── MutInt's identity ─────────────────────────────────────────────────────────
-# aledb-core is unbranded: without this the sidebar carries no name and `/` is the
+# mutint-core is unbranded: without this the sidebar carries no name and `/` is the
 # project list. MutInt is a collater and contributes no UI of its own, but it is
 # still the thing you are looking at, so it names itself here. No logo and no
 # home/splash.html, so there is no icon and `/` stays the project list.
 from mutint_app.version import NAME as _MUTINT_NAME, __version__ as _MUTINT_VERSION  # noqa: E402
 
-ALEDB_BRANDING = {
+MUTINT_BRANDING = {
     'name': _MUTINT_NAME,
     'version': 'v%s' % _MUTINT_VERSION,
 }

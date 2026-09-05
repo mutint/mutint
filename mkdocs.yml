@@ -1,12 +1,12 @@
 # MutInt's manual. `./mutint docs` builds it, merging in every installed component's pages --
-# see aledb_common/docs_manual.py for how that works.
+# see mutint_common/docs_manual.py for how that works.
 #
-# The nav below is only MutInt's own contribution. `Using ALEdb` and `Extending ALEdb` come
-# from aledb-core and the plugins; this project files its pages under `About this deployment`,
+# The nav below is only MutInt's own contribution. `Using MutInt` and `Extending MutInt` come
+# from mutint-core and the plugins; this project files its pages under `About this deployment`,
 # which is where a component's own story goes.
 
 site_name: MutInt
-site_description: The MutInt deployment of ALEdb
+site_description: The reference MutInt assembly
 repo_url: https://github.com/barricklab/mutint
 edit_uri: ""
 

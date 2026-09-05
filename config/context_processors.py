@@ -1,5 +1,5 @@
 """
-Required by aledb-core's TEMPLATES config.
+Required by mutint-core's TEMPLATES config.
 `config.context_processors` resolves here at runtime because mutint/ is first
 on sys.path.
 """

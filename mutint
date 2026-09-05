@@ -38,11 +38,11 @@ if os.path.isfile(_gitmodules):
 
 # Where the code finds the binaries at runtime. Exported here rather than derived in settings
 # because settings cannot know it: an assembled project reaches get_base_settings() through
-# aledb-core's config/defaults.py, which passes the *aledb-core* directory as base_dir, so
+# mutint-core's config/defaults.py, which passes the *mutint-core* directory as base_dir, so
 # anything derived there points inside the submodule -- the same trap templates/ and
 # staticfiles/ have to work around. This script is the one place that knows the project root.
 # os.execv carries the current environment, so this survives the re-exec below.
-os.environ.setdefault('ALEDB_TOOLS_DIR', _TOOLS)
+os.environ.setdefault('MUTINT_TOOLS_DIR', _TOOLS)
 
 _MICROMAMBA_PLATFORMS = {
     ('Darwin', 'arm64'): 'osx-arm64',
@@ -89,7 +89,7 @@ def _micromamba():
     if target is None:
         raise SystemExit(
             "No micromamba build known for %s/%s. Install the tools in tools.txt yourself "
-            "and put them on PATH; aledb-core falls back to PATH when env/tools has no "
+            "and put them on PATH; mutint-core falls back to PATH when env/tools has no "
             "copy." % key)
 
     url = 'https://micro.mamba.pm/api/micromamba/%s/latest' % target
@@ -240,31 +240,31 @@ _NO_DATABASE = frozenset(['install', 'db', 'version', 'docs', 'help', '--help', 
 
 
 def _pg():
-    """aledb_common/pg.py, loaded by path.
+    """mutint_common/pg.py, loaded by path.
 
     By path because this runs before the venv exists and before Django is importable -- the
-    same trick mutint/config/settings.py uses to load aledb-core's config/defaults.py, and
+    same trick mutint/config/settings.py uses to load mutint-core's config/defaults.py, and
     discovered the way tools.txt already is, so it resolves standalone and assembled with
     nothing to configure.
     """
     import importlib.util
 
     for full in _submodule_paths + [BASE_DIR]:
-        path = os.path.join(full, 'aledb_common', 'pg.py')
+        path = os.path.join(full, 'mutint_common', 'pg.py')
         if os.path.isfile(path):
-            spec = importlib.util.spec_from_file_location('_aledb_pg', path)
+            spec = importlib.util.spec_from_file_location('_mutint_pg', path)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             return module
-    raise SystemExit("Cannot find aledb_common/pg.py. Is aledb-core present?")
+    raise SystemExit("Cannot find mutint_common/pg.py. Is mutint-core present?")
 
 
 def _ensure_database(own=True):
     """Bring this checkout's database up, and export where it is.
 
-    Exported rather than derived in settings, for the reason ALEDB_TOOLS_DIR is: an assembled
-    project reaches get_base_settings() through aledb-core's config/defaults.py, which passes
-    the *aledb-core* directory as base_dir, so anything derived there points inside the
+    Exported rather than derived in settings, for the reason MUTINT_TOOLS_DIR is: an assembled
+    project reaches get_base_settings() through mutint-core's config/defaults.py, which passes
+    the *mutint-core* directory as base_dir, so anything derived there points inside the
     submodule. This script is the one place that knows the project root.
     """
     pg = _pg()
@@ -292,17 +292,17 @@ def _db_command(args):
         print('\n'.join(cluster.describe()))
     elif verb == 'stop':
         if pg.is_external():
-            raise SystemExit("ALEDB_DB_HOST is set, so this manages no server.")
+            raise SystemExit("MUTINT_DB_HOST is set, so this manages no server.")
         print("Stopped." if cluster.stop() else "Not running.")
     elif verb == 'reset':
         if pg.is_external():
-            raise SystemExit("ALEDB_DB_HOST is set, so this manages no server.")
+            raise SystemExit("MUTINT_DB_HOST is set, so this manages no server.")
         if '--yes' not in args:
             raise SystemExit(
                 "`db reset` destroys this checkout's database and everything in it.\n"
                 "Re-run it as `db reset --yes` if that is what you want.\n\n"
                 "Note that primary keys restart at 1 while the file store does not: paths\n"
-                "under ALEDB_STORE_DIR are derived from them, so the first import after a\n"
+                "under MUTINT_STORE_DIR are derived from them, so the first import after a\n"
                 "reset writes over the previous installation's stored references and\n"
                 "alignments. Move that directory aside first.")
         import shutil
@@ -357,11 +357,11 @@ else:
     # whole command line in a loop, so an ungated hook would stop the database on every
     # code reload, mid-session, presenting as connections dropping while you edit rather
     # than as anything to do with a hook. RUN_MAIN is set only in the reloader's child;
-    # aledb_common/management/commands/start.py gates on it for the same class of problem.
+    # mutint_common/management/commands/start.py gates on it for the same class of problem.
     #
     # The pid check is the belt to that braces: the owner recorded the pid that started the
     # server, execv preserved it, and the reloader's child has a different one.
-    if (os.environ.get('ALEDB_DB_MANAGED') == '1'
+    if (os.environ.get('MUTINT_DB_MANAGED') == '1'
             and os.environ.get('RUN_MAIN') != 'true'):
         _owned = _pg().Cluster(BASE_DIR)
         if _owned.owned_by_me():
@@ -388,6 +388,6 @@ else:
                 except (ValueError, OSError):
                     pass
 
-    from aledb_common.cli import manage
+    from mutint_common.cli import manage
     if __name__ == '__main__':
         manage()

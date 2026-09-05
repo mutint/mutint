@@ -65,13 +65,13 @@ is fixed to port 8000, so a second one would only collide with the first.
 ```bash
 ./mutint check
 ./mutint test              # core's suite and every plugin's
-./mutint test aledb_compare
+./mutint test mutint_compare
 ./mutint migrate
 ./mutint shell
 ./mutint docs --serve      # this manual
 ```
 
-`./mutint` inherits every aledb-core command — both entry scripts end at the same dispatcher —
+`./mutint` inherits every mutint-core command — both entry scripts end at the same dispatcher —
 plus any a plugin ships. `./mutint help` lists them.
 
 ## Updating a component
@@ -80,10 +80,10 @@ A submodule is pinned to a commit, so committing in a component does not change 
 runs until the pointer moves:
 
 ```bash
-git -c protocol.file.allow=always submodule update --remote aledb-core
-git submodule status aledb-core        # the SHA must equal that repo's HEAD
+git -c protocol.file.allow=always submodule update --remote mutint-core
+git submodule status mutint-core        # the SHA must equal that repo's HEAD
 ./mutint check
-git add aledb-core && git commit -m "chore: bump aledb-core"
+git add mutint-core && git commit -m "chore: bump mutint-core"
 ```
 
 !!! warning "Check the SHA, and never commit inside a submodule"
@@ -93,5 +93,5 @@ git add aledb-core && git commit -m "chore: bump aledb-core"
 
     And the submodule directories are **detached-HEAD clones**. A commit made inside one is
     reachable only by SHA within that clone, and is discarded the next time the pointer moves.
-    `cd aledb-core` from here lands in one, looks identical, and passes its tests. Check
+    `cd mutint-core` from here lands in one, looks identical, and passes its tests. Check
     `git branch --show-current` before committing: an empty answer means the wrong checkout.

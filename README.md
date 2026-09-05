@@ -1,7 +1,7 @@
 # MutInt
 
-An assembled Django project combining [aledb-core](aledb-core/README.md) with the MutInt app
-(`mutint_app`). Core ALEdb functionality is provided via the `aledb-core` git submodule;
+An assembled Django project combining [mutint-core](mutint-core/README.md) with the MutInt app
+(`mutint_app`). Core MutInt functionality is provided via the `mutint-core` git submodule;
 `mutint-app` adds the MutInt-specific views and models.
 
 ---
@@ -41,7 +41,7 @@ The admin interface is at `http://127.0.0.1:8000/admin/`. Change the default pas
 
 ## Management commands
 
-The `./mutint` script works like `./aledb` in aledb-core — no manual venv activation needed:
+The `./mutint` script works like `./mutint` in mutint-core — no manual venv activation needed:
 
 ```bash
 ./mutint migrate
@@ -52,5 +52,5 @@ The `./mutint` script works like `./aledb` in aledb-core — no manual venv acti
 ./mutint install                      # reinstall/update all dependencies
 ```
 
-See [aledb-core/README.md](aledb-core/README.md) for data loading, environment variables,
+See [mutint-core/README.md](mutint-core/README.md) for data loading, environment variables,
 and the full list of management commands.
