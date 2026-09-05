@@ -7,7 +7,7 @@
 
 site_name: MutInt
 site_description: The reference MutInt assembly
-repo_url: https://github.com/barricklab/mutint
+repo_url: https://github.com/mutint/mutint
 edit_uri: ""
 
 theme:
