@@ -21,3 +21,6 @@
 [submodule "aledb-needle"]
 	path = aledb-needle
 	url = ../aledb-needle
+[submodule "mutint-breseq"]
+	path = mutint-breseq
+	url = ../mutint-breseq
