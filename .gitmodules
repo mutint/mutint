@@ -1,3 +1,23 @@
+# Every submodule pins the branch it tracks, and that is not decoration.
+#
+# `git submodule update --remote` follows each submodule's `origin/HEAD` when no branch is
+# named, and `origin/HEAD` is whatever the source repository last pointed it at -- which is
+# not necessarily the branch being developed. aledb-core's once pointed at a divergent
+# `core-refactor`, and a bump silently rolled the pointer **backwards** while reporting
+# success. Naming the branch is what makes a bump mean "take that branch's tip", and it is
+# why the check after a bump is each SHA against the component repo's HEAD.
+#
+# aledb-core is `master` and everything else is `main`; that is the state of those
+# repositories, not a convention worth normalizing here.
+#
+# **Order matters, and only here.** Plugin nav entries and Overview panels render in
+# INSTALLED_APPS order, which follows this file for the plugins -- see **Sidebar navigation**
+# in the suite CLAUDE.md. aledb-compare leads so that Compare is the first plugin entry,
+# which is as close to its old core position as the design allows.
+#
+# The urls are relative on purpose. Git resolves `../aledb-core` against this repository's
+# own remote, which is what lets the whole suite be cloned as a directory of siblings.
+
 [submodule "aledb-core"]
 	path = aledb-core
 	url = ../aledb-core
@@ -6,21 +26,34 @@
 [submodule "mutint-app"]
 	path = mutint-app
 	url = ../mutint-app
+	branch = main
+
 [submodule "aledb-compare"]
 	path = aledb-compare
 	url = ../aledb-compare
+	branch = main
+
 [submodule "aledb-fixation"]
 	path = aledb-fixation
 	url = ../aledb-fixation
+	branch = main
+
 [submodule "aledb-converge"]
 	path = aledb-converge
 	url = ../aledb-converge
+	branch = main
+
 [submodule "aledb-phylogeny"]
 	path = aledb-phylogeny
 	url = ../aledb-phylogeny
+	branch = main
+
 [submodule "aledb-needle"]
 	path = aledb-needle
 	url = ../aledb-needle
+	branch = main
+
 [submodule "mutint-breseq"]
 	path = mutint-breseq
 	url = ../mutint-breseq
+	branch = main
