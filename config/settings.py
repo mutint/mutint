@@ -59,7 +59,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # (has __init__.py + apps.py) and is not already in INSTALLED_APPS is added.
 # The mutint-core submodule is skipped entirely: all of its apps are provided by
 # base settings above, and re-scanning it would pull in packages base settings
-# deliberately omits (e.g. mutint_accounts alongside mutint_accounts_noauth).
+# deliberately omits (e.g. a second auth app beside mutint_accounts).
 
 _core_apps = set(INSTALLED_APPS)
 for _subdir_path in _submodule_paths:
