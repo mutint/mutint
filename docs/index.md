@@ -25,9 +25,9 @@ mutint/
 ├── mutint-app/      MutInt's own Django app
 ├── mutint-core/      the platform
 ├── mutint-compare/   ┐
-├── mutint-fixation/  ├─ plugins, each its own repository
-├── mutint-converge/  │
-├── mutint-phylogeny/ ┘
+├── mutint-phylogeny/ ├─ plugins, each its own repository
+├── mutint-needle/    │
+├── mutint-breseq/    ┘
 └── mutint           the entry script
 ```
 

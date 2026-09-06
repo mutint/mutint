@@ -7,10 +7,10 @@ this one are an inventory of what this deployment actually has.
 | component | what it adds |
 |---|---|
 | **mutint-core** | the platform: experiments, samples, mutations, import, export, the genome browser |
-| **mutint-compare** | the cross-sample mutation table at `/compare/` |
-| **mutint-fixation** | mutations that have fixed in a lineage, at `/fixation` |
-| **mutint-converge** | genes hit independently in more than one lineage, at `/converge` |
+| **mutint-compare** | the cross-sample mutation table at `/compare/`, with its Show menu of convergent and fixed mutations |
 | **mutint-phylogeny** | a maximum-parsimony tree over an experiment's samples |
+| **mutint-needle** | the needle plot, as a panel on the Overview |
+| **mutint-breseq** | breseq runs on uploaded reads, queued for the background worker |
 | **mutint-app** | MutInt's own app — no UI, by design |
 
 `/about` in a running instance is the live version of this table: it reports every installed

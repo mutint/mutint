@@ -33,16 +33,6 @@
 	url = ../mutint-compare
 	branch = main
 
-[submodule "mutint-fixation"]
-	path = mutint-fixation
-	url = ../mutint-fixation
-	branch = main
-
-[submodule "mutint-converge"]
-	path = mutint-converge
-	url = ../mutint-converge
-	branch = main
-
 [submodule "mutint-phylogeny"]
 	path = mutint-phylogeny
 	url = ../mutint-phylogeny
