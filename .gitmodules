@@ -47,3 +47,7 @@
 	path = mutint-breseq
 	url = ../mutint-breseq
 	branch = main
+[submodule "mutint-api"]
+	path = mutint-api
+	url = ../mutint-api
+	branch = main

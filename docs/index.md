@@ -27,7 +27,8 @@ mutint/
 ├── mutint-compare/   ┐
 ├── mutint-phylogeny/ ├─ plugins, each its own repository
 ├── mutint-needle/    │
-├── mutint-breseq/    ┘
+├── mutint-breseq/    │
+├── mutint-api/       ┘
 └── mutint           the entry script
 ```
 
