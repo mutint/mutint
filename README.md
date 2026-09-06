@@ -1,8 +1,7 @@
 # MutInt
 
-An assembled Django project combining [mutint-core](mutint-core/README.md) with the MutInt app
-(`mutint_app`). Core MutInt functionality is provided via the `mutint-core` git submodule;
-`mutint-app` adds the MutInt-specific views and models.
+An assembled Django project: [mutint-core](mutint-core/README.md) and a set of plugins, each
+a git submodule, collected by the `config/` package here. MutInt has no app of its own.
 
 ---
 

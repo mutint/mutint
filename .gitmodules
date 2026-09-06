@@ -23,11 +23,6 @@
 	url = ../mutint-core
 	branch = master
 
-[submodule "mutint-app"]
-	path = mutint-app
-	url = ../mutint-app
-	branch = main
-
 [submodule "mutint-compare"]
 	path = mutint-compare
 	url = ../mutint-compare

@@ -80,9 +80,10 @@ for _subdir_path in _submodule_paths:
 # ── MutInt's identity ─────────────────────────────────────────────────────────
 # mutint-core is unbranded: without this the sidebar carries no name and `/` is the
 # project list. MutInt is a collater and contributes no UI of its own, but it is
-# still the thing you are looking at, so it names itself here. No logo and no
+# still the thing you are looking at, so it names itself here -- from its own
+# config/version.py, since it has no app of its own. No logo and no
 # home/splash.html, so there is no icon and `/` stays the project list.
-from mutint_app.version import NAME as _MUTINT_NAME, __version__ as _MUTINT_VERSION  # noqa: E402
+from config.version import NAME as _MUTINT_NAME, __version__ as _MUTINT_VERSION  # noqa: E402
 
 MUTINT_BRANDING = {
     'name': _MUTINT_NAME,

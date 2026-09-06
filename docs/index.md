@@ -8,10 +8,11 @@ developed against.
 
 Worth stating plainly, because the absence looks like an oversight and is not.
 
-MutInt exists to *collate*. It contributes no features and no pages of its own — its
-`mutint_app` registers no sidebar entry, so the sidebar you see is entirely mutint-core's plus
-the plugins'. When something needs to appear in MutInt's UI, the question is which core app or
-plugin should own it, never whether `mutint_app` should grow an entry.
+MutInt exists to *collate*. It contributes no features and no pages of its own — it has no
+Django app at all, only the `config/` package that assembles the others — so the sidebar you
+see is entirely mutint-core's plus the plugins'. When something needs to appear in MutInt's UI,
+the question is which core app or plugin should own it. A new plugin starts by copying
+`mutint-example`, the stub plugin in the suite root, which is installed here deliberately not.
 
 So this section of the manual is short by design. Everything you actually do with MutInt is
 under **Using MutInt**, and everything about writing code for it under **Extending MutInt** —
@@ -22,7 +23,6 @@ both contributed by the components listed in [what is inside it](components.md).
 ```
 mutint/
 ├── config/          settings and URLs for this assembly
-├── mutint-app/      MutInt's own Django app
 ├── mutint-core/      the platform
 ├── mutint-compare/   ┐
 ├── mutint-phylogeny/ ├─ plugins, each its own repository

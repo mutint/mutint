@@ -12,7 +12,6 @@ this one are an inventory of what this deployment actually has.
 | **mutint-needle** | the needle plot, as a panel on the Overview |
 | **mutint-breseq** | breseq runs on uploaded reads, queued for the background worker |
 | **mutint-api** | the public read API at `/api/`, for another MutInt to pull public data from |
-| **mutint-app** | MutInt's own app — no UI, by design |
 
 `/about` in a running instance is the live version of this table: it reports every installed
 component with its version and git revision, so it is accurate for *your* checkout in a way
