@@ -57,3 +57,7 @@ build/
 # ...and one moved aside, which is what a migration reset asks for: primary keys restart
 # at 1 while store paths are derived from them, so the old files have to leave the way.
 /mutint_store.*/
+
+# Everything a checkout would lose: the file store (data/store) and the database
+# (data/db). env/ holds only what can be rebuilt.
+/data/

@@ -302,14 +302,14 @@ def _db_command(args):
                 "`db reset` destroys this checkout's database and everything in it.\n"
                 "Re-run it as `db reset --yes` if that is what you want.\n\n"
                 "Note that primary keys restart at 1 while the file store does not: paths\n"
-                "under MUTINT_STORE_DIR are derived from them, so the first import after a\n"
-                "reset writes over the previous installation's stored references and\n"
-                "alignments. Move that directory aside first.")
+                "under MUTINT_STORE_DIR (data/store) are derived from them, so the first\n"
+                "import after a reset writes over the previous installation's stored\n"
+                "references and alignments. Move that directory aside first.")
         import shutil
         cluster.stop()
         shutil.rmtree(cluster.data, ignore_errors=True)
         # `ignore_errors` hides the one failure that actually happens here. On macOS,
-        # opening `env/` in Finder leaves a `.DS_Store` inside `pgdata`; rmtree can fail on
+        # opening `data/` in Finder leaves a `.DS_Store` inside `db`; rmtree can fail on
         # it and say nothing, and `initdb` then refuses the directory with "exists but is
         # not empty ... perhaps due to it being a mount point", which names neither the file
         # nor the reset that left it. Checking here costs one stat and turns that into a
