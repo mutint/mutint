@@ -6,13 +6,18 @@
    icon in core's "Powered by ALEdb" watermark, so shadowing it would restyle an attribution
    that is not this deployment's to change.
 
-   `icon.svg` first and unsized: a browser that understands SVG icons prefers it at every
-   size, and falls through to the .ico otherwise. `icon-16.svg` is the simplified mark drawn
-   for that size -- three shapes where the full icon has fifteen, because the detailed one
-   turns to mud at 16px. {% endcomment %}
-<link rel="icon" type="image/svg+xml" sizes="16x16" href="{% static "img/mutint/icon-16.svg" %}">
-<link rel="icon" type="image/svg+xml" href="{% static "img/mutint/icon.svg" %}">
-<link rel="icon" type="image/x-icon" href="{% static "img/mutint/favicon.ico" %}">
+   **One SVG candidate, not two.** `sizes` is not honoured on an `image/svg+xml` icon link --
+   a browser that understands SVG icons treats it as any-size -- so two same-`rel` SVGs left
+   it unspecified which one a 16px tab got, and it was as likely to be the detailed mark as
+   the one drawn for that size. The one offered is `icon-16.svg`, the simplified mark: three
+   shapes where the full icon has fifteen, because a tab is 16-32px and the detailed one turns
+   to mud there. The `.ico` is for browsers with no SVG icon support and is the only file here
+   that genuinely carries per-size artwork -- simplified at 16 and 32, full at 48.
+
+   `icon.svg`, the full mark, stays on disk and is deliberately not linked: it is the source
+   the MutInt.app bundle icon is rendered from. {% endcomment %}
+<link rel="icon" type="image/x-icon" sizes="32x32" href="{% static "img/mutint/favicon.ico" %}">
+<link rel="icon" type="image/svg+xml" href="{% static "img/mutint/icon-16.svg" %}">
 <link rel="apple-touch-icon" href="{% static "img/mutint/apple-touch-icon.png" %}">
 <link rel="manifest" href="{% static "img/mutint/manifest.webmanifest" %}">
 <meta name="theme-color" content="#7c4bd3">

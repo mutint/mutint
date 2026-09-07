@@ -81,10 +81,10 @@ is fixed to port 8000, so a second one would only collide with the first.
 
 !!! note "Both are plain text, and neither is signed"
 
-    `MutInt.app` is a folder with an `Info.plist` and a shell script in it — there is no build
-    step, and it has no icon of its own because MutInt ships no logo. Dropping a
-    `Contents/Resources/MutInt.icns` in and naming it under a `CFBundleIconFile` key is all one
-    would take.
+    `MutInt.app` is a folder with an `Info.plist`, a shell script and an icon in it — there is
+    no build step. The icon is a checked-in `Contents/Resources/MutInt.icns`, composed from the
+    same SVGs in `staticfiles/img/mutint/` that the site's favicon comes from; `Info.plist`'s
+    comment records how to rebuild it.
 
     Both rely on their executable bit, which git records. If Finder opens one in a text editor
     instead of running it, `chmod +x` is the fix.

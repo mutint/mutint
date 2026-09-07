@@ -9,9 +9,23 @@
 	<key>CFBundleExecutable</key>
 	<string>MutInt</string>
 	<!-- Resources/MutInt.icns, named without its extension, which is what this key
-	     expects. Every slot including the 1024px one is rendered from the SVGs in
-	     staticfiles/img/mutint/ rather than resampled from a PNG; the 16pt slots come
-	     from icon-16.svg, the simplified mark drawn for that size. -->
+	     expects. Rebuilding it, since nothing in the repo does: compose each slot on
+	     Apple's 1024pt grid -- an 824x824 plate, corner radius 185.4, centred, filled
+	     #ffffff -- with the mark from staticfiles/img/mutint/ centred on its own ink
+	     bounding box at an extent of 660, i.e. 82pt of plate showing on every side.
+	     Render every one of the ten standard slots at its native size from that SVG
+	     rather than resampling a master, then `iconutil -c icns`.
+
+	     The 16 and 32 physical-pixel slots use icon-16.svg, the simplified mark: three
+	     shapes where the full icon has fifteen. That is the same rule favicon.ico
+	     follows, so the tab icon and the bundle icon agree about where detail stops
+	     being legible. Everything from 64px up uses icon.svg.
+
+	     Rasterize with a browser engine, not ImageMagick: its built-in SVG renderer
+	     flattens circles to a fixed segment count in user units, and the mark's rings
+	     come out visibly polygonal once the composing transform magnifies them.
+	     Supersampling does not hide it. Headless Chrome writes the screenshot and then
+	     hangs on shutdown, so poll for the file and kill it. -->
 	<key>CFBundleIconFile</key>
 	<string>MutInt</string>
 	<key>CFBundleIdentifier</key>
