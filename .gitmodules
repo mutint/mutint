@@ -21,7 +21,7 @@
 [submodule "mutint-core"]
 	path = mutint-core
 	url = ../mutint-core
-	branch = master
+	branch = main
 
 [submodule "mutint-compare"]
 	path = mutint-compare
