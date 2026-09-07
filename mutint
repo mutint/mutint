@@ -239,24 +239,72 @@ def _install():
 _NO_DATABASE = frozenset(['install', 'db', 'version', 'docs', 'help', '--help', '-h'])
 
 
-def _pg():
-    """mutint_common/pg.py, loaded by path.
+def _core_module(name):
+    """A module from mutint_common, loaded by path.
 
     By path because this runs before the venv exists and before Django is importable -- the
     same trick mutint/config/settings.py uses to load mutint-core's config/defaults.py, and
     discovered the way tools.txt already is, so it resolves standalone and assembled with
     nothing to configure.
+
+    Only `pg.py` and `upgrade.py` are loaded this way, and both are written to the constraints
+    that implies: standard library only, nothing from Django, and parseable on whatever
+    python3 the host happens to have. Their own test modules assert all three, because nothing
+    else would catch a violation until somebody ran this on a machine with an older Python.
     """
     import importlib.util
 
     for full in _submodule_paths + [BASE_DIR]:
-        path = os.path.join(full, 'mutint_common', 'pg.py')
+        path = os.path.join(full, 'mutint_common', '%s.py' % name)
         if os.path.isfile(path):
-            spec = importlib.util.spec_from_file_location('_mutint_pg', path)
+            spec = importlib.util.spec_from_file_location('_mutint_%s' % name, path)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
             return module
-    raise SystemExit("Cannot find mutint_common/pg.py. Is mutint-core present?")
+    raise SystemExit("Cannot find mutint_common/%s.py. Is mutint-core present?" % name)
+
+
+def _pg():
+    return _core_module('pg')
+
+
+def _apply_staged_upgrade():
+    """Apply an upgrade staged by /upgrade/, before anything here reads a requirements.txt.
+
+    **Placement is the whole design.** The venv and tools sentinels hash the contents of every
+    component's requirements.txt and tools.txt, so moving the working tree at this point means
+    a version that changed either one rebuilds the environment on this same launch with
+    nothing else written, and start.py migrates afterwards. Everything downstream of this call
+    is machinery that predates it.
+
+    It is done here rather than from the web request that asked for it because a running
+    process cannot safely replace its own source: runserver's autoreloader would fire
+    part-way through the checkout, a new requirements.txt cannot be installed into the
+    environment currently executing, and migrations would run against half-swapped code.
+
+    Never raises. A launch that refuses to start because an upgrade failed leaves somebody
+    with no MutInt at all, which is worse than an old one and a message; the failure is
+    recorded in data/upgrade.json and reported by /upgrade/.
+    """
+    # The state file is checked *first*, and without loading anything, so the overwhelmingly
+    # common case -- nothing ever staged here -- costs one stat and cannot fail at all. That
+    # also means a checkout whose mutint-core predates this feature launches normally: it only
+    # reaches the loader when there is genuinely an upgrade to apply.
+    state_file = os.path.join(BASE_DIR, 'data', 'upgrade.json')
+    if not os.path.isfile(state_file):
+        return
+    try:
+        _core_module('upgrade').apply_staged(BASE_DIR, pg=_pg())
+    except (Exception, SystemExit) as exc:
+        # `SystemExit` explicitly, because `_core_module` raises it when the module is not
+        # there -- and `except Exception` does not catch it, SystemExit deriving from
+        # BaseException. That combination is exactly a checkout whose entry script is newer
+        # than its mutint-core, which is what every submodule bump passes through.
+        #
+        # Broad otherwise, and deliberately: this runs before anything else on every `start`,
+        # and a launch that refuses because an upgrade failed leaves somebody with no MutInt
+        # at all. The failure is recorded in data/upgrade.json and reported by /upgrade/.
+        print("Could not apply the staged upgrade: %s" % exc)
 
 
 def _ensure_database(own=True):
@@ -334,6 +382,11 @@ elif _verb == 'db':
 else:
     # Auto-install and re-exec under venv if not already inside it.
     if os.path.normpath(sys.prefix) != os.path.normpath(_VENV):
+        # Before the sentinel check, so a new version's requirements.txt and tools.txt are the
+        # ones the install below reads. Only for `start`: that is the verb that also migrates,
+        # and code newer than the schema is the one state an upgrade must never leave behind.
+        if _verb == 'start':
+            _apply_staged_upgrade()
         if not _sentinel_matches(_VENV_READY, _requirements_payload()):
             _install()
         # A checkout whose venv predates tools.txt, or whose earlier solve failed, still

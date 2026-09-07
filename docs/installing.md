@@ -1,5 +1,34 @@
 # Installing MutInt
 
+**MutInt is installed as a git checkout, and that is not incidental.** It upgrades itself in
+place -- see [Upgrading](upgrading.md) -- and it can only do that from a repository it can
+fetch into. There is no tarball, on purpose: unpacking one over an installation that already
+holds data has no safe answer, since the database in `data/db` and the file store in
+`data/store` live inside the directory you would be replacing.
+
+Note also that GitHub's own **source archive of this repository will not work**. The components
+are submodules, so the archive contains six *empty* directories, and `config/settings.py`
+discovers `INSTALLED_APPS` by scanning them -- it would find nothing and fail in a way that
+says nothing about submodules. (If you have already ended up in that state,
+`./mutint upgrade --adopt` turns such a tree into a real checkout without touching your data.)
+
+## The install script
+
+```bash
+curl -LO https://raw.githubusercontent.com/mutint/mutint/main/install.sh
+sh install.sh
+```
+
+It clones MutInt with all of its components and runs `./mutint start`.
+
+**It will fetch its own `git` if the machine has none.** The same micromamba the entry script
+uses for Python, the external tools and PostgreSQL can install git too, so a machine without
+developer tools is not turned away at the first step. That copy is temporary: `git` is in
+mutint-core's `tools.txt`, so the checkout installs its own into `env/tools` on first run like
+any other tool.
+
+It is downloaded and then run, rather than piped into a shell, so you can read it first.
+
 ## Cloning
 
 The submodule URLs are **relative paths**, which git resolves against the parent's remote. That
