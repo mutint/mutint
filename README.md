@@ -8,7 +8,7 @@ a git submodule, collected by the `config/` package here. MutInt has no app of i
 ## Cloning
 
 ```bash
-git clone --recurse-submodules <repo-url>
+git clone --recurse-submodules https://github.com/mutint/mutint.git
 ```
 
 If you already cloned without `--recurse-submodules`:

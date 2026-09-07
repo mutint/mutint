@@ -7,7 +7,7 @@ keeps the assembly working without hardcoded hosts, and it means the clone has t
 siblings can be found.
 
 ```bash
-git clone --recurse-submodules <mutint-url>
+git clone --recurse-submodules https://github.com/mutint/mutint.git
 cd mutint
 ```
 
