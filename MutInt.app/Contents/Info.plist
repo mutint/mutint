@@ -8,6 +8,12 @@
 	<string>MutInt</string>
 	<key>CFBundleExecutable</key>
 	<string>MutInt</string>
+	<!-- Resources/MutInt.icns, named without its extension, which is what this key
+	     expects. Every slot including the 1024px one is rendered from the SVGs in
+	     staticfiles/img/mutint/ rather than resampled from a PNG; the 16pt slots come
+	     from icon-16.svg, the simplified mark drawn for that size. -->
+	<key>CFBundleIconFile</key>
+	<string>MutInt</string>
 	<key>CFBundleIdentifier</key>
 	<string>edu.utexas.barricklab.mutint.launcher</string>
 	<key>CFBundlePackageType</key>

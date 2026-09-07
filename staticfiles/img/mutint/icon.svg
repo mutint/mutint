@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21.6 21.6" role="img" aria-label="MutInt">
+  <title>MutInt</title>
+  <path fill="#2f9e5f" d="M4.3,1.5h8.5c1.3,0,2.4,1.1,2.4,2.4h0c0,1.3-1.1,2.4-2.4,2.4H4.3c-1.3,0-2.4-1.1-2.4-2.4h0c0-1.3,1.1-2.4,2.4-2.4Z"/>
+  <path fill="#d18b1e" d="M5.6,15.3h10.6c1.1,0,2.2,1.1,2.2,2.4h0c0,1.3-1.1,2.4-2.2,2.4H5.6c-1.5,0-2.6-1.1-2.6-2.4h0c0-1.3,1.1-2.4,2.6-2.4Z"/>
+  <path fill="#1139cc" d="M3.9,8.2h5.1c1.5,0,2.8,1.3,2.8,2.8h0c0,1.5-1.3,2.8-2.8,2.8H3.9c-1.5,0-2.8-1.3-2.8-2.8h0c0-1.5,1.3-2.8,2.8-2.8Z"/>
+  <g fill="none" stroke="#7c4bd3" stroke-width="1" stroke-linecap="round">
+    <path d="M8.2,4.1l8.8,6.1"/>
+    <path d="M8.4,11.2l8.6-1"/>
+    <path d="M8.5,18l8.5-7.8"/>
+  </g>
+  <circle cx="8.1" cy="17.8" r="1.9"/>
+  <circle cx="16.9" cy="10" r="3.5" fill="#fff" stroke="#7c4bd3" stroke-width="1"/>
+  <circle cx="17" cy="10" r="2"/>
+  <circle cx="8" cy="11" r="2.4" fill="#fff" stroke="#7c4bd3" stroke-width="1"/>
+  <circle cx="8" cy="11" r="1.1"/>
+  <circle cx="7.8" cy="3.8" r="2.4" fill="#fff" stroke="#7c4bd3" stroke-width="1"/>
+  <circle cx="7.8" cy="3.8" r="1.1"/>
+  <circle cx="8" cy="17.7" r="2.4" fill="#fff" stroke="#7c4bd3" stroke-width="1"/>
+  <circle cx="8" cy="17.7" r="1.1"/>
+</svg>

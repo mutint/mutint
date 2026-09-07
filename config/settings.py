@@ -81,11 +81,29 @@ for _subdir_path in _submodule_paths:
 # mutint-core is unbranded: without this the sidebar carries no name and `/` is the
 # project list. MutInt is a collater and contributes no UI of its own, but it is
 # still the thing you are looking at, so it names itself here -- from its own
-# config/version.py, since it has no app of its own. No logo and no
-# home/splash.html, so there is no icon and `/` stays the project list.
+# config/version.py, since it has no app of its own. Still no home/splash.html, so
+# `/` stays the project list.
 from config.version import NAME as _MUTINT_NAME, __version__ as _MUTINT_VERSION  # noqa: E402
 
 MUTINT_BRANDING = {
     'name': _MUTINT_NAME,
     'version': 'v%s' % _MUTINT_VERSION,
+
+    # The wordmark carries the name, so the sidebar shows it instead of `name version`.
+    # The version is deliberately not repeated under it -- it is a logo, not a status
+    # line, and the same argument retired the version from the "Powered by ALEdb"
+    # watermark. `version` above is still read: it is in every error page's <title>, and
+    # `/about` inventories every component's anyway.
+    #
+    # The word is outlined, not live text. It was drawn in IBM Plex Mono SemiBold, which
+    # is not a font anybody else has, so as `<text>` it rendered in whatever the browser
+    # fell back to. The glyphs are paths now and the file names no font at all.
+    'brand_logo': 'img/mutint/logo.svg',
+    'brand_logo_alt': _MUTINT_NAME,
+
+    # Clicking the brand goes to the source. MutInt is a research tool people run
+    # themselves, so where it comes from is the useful destination -- and this is what
+    # makes `mutint_dashboard` put its own nav entry back, since the dashboard would
+    # otherwise be reachable from nowhere. See its apps.py.
+    'url': 'https://github.com/mutint/mutint',
 }
