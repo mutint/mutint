@@ -1,0 +1,52 @@
+# The assembled suite: mutint-core's tests plus every installed plugin's.
+#
+# This is the only place some things can be tested at all. `config/settings.py` discovers
+# INSTALLED_APPS by scanning the submodule directories, plugins register their URLs, panels
+# and rebuilds from AppConfig.ready(), and every plugin migration joins core's graph. None of
+# that exists in a standalone mutint-core checkout, so a green component suite and a broken
+# MutInt is a real combination -- and `./mutint check` does not catch it, because the system
+# check passes even when the migration graph will not load.
+
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: assembled suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      # The components are submodules pinned by SHA, so this tests exactly the combination
+      # this commit names -- which is the thing a bump changes and nothing else verifies.
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # See the comment in mutint-core's copy of this workflow for why these paths and not
+      # others. The key spans every component's requirements.txt and tools.txt, since the
+      # entry script collects them from all of them, not just this project's.
+      - name: Restore the managed environment
+        uses: actions/cache@v4
+        with:
+          path: |
+            env/python
+            env/main
+            env/tools
+            env/postgres
+            env/micromamba
+          key: env-${{ runner.os }}-${{ hashFiles('**/requirements.txt', '**/tools.txt', 'mutint') }}
+          restore-keys: env-${{ runner.os }}-
+
+      - run: ./mutint test
