@@ -29,6 +29,25 @@ any other tool.
 
 It is downloaded and then run, rather than piped into a shell, so you can read it first.
 
+### Which version it installs
+
+**The latest release, not the tip of `main`.** The script asks the remote for its `v*` tags
+the same way [Upgrading](upgrading.md) does -- `git ls-remote`, no API and no token -- and
+clones the highest one, leaving `HEAD` detached on it. Name a version to override that:
+
+```bash
+sh install.sh v0.0.1       # that release
+sh install.sh main         # the development branch
+```
+
+`MUTINT_VERSION` does the same thing for a script being run non-interactively, beside the
+`MUTINT_REPO` and `MUTINT_DIR` it already reads.
+
+Asking for `main` also writes the `main` channel into `data/upgrade.json`, so the installation
+goes on following the branch it was installed from. Without that it would sit on the default
+`stable` channel and be offered the newest *release tag* -- which is behind the development
+branch, so the offer would be a downgrade.
+
 ## Cloning
 
 The submodule URLs are **relative paths**, which git resolves against the parent's remote. That
@@ -36,9 +55,12 @@ keeps the assembly working without hardcoded hosts, and it means the clone has t
 siblings can be found.
 
 ```bash
-git clone --recurse-submodules https://github.com/mutint/mutint.git
+git clone --recurse-submodules --branch v0.0.1 https://github.com/mutint/mutint.git
 cd mutint
 ```
+
+Without `--branch` a clone takes the tip of `main`, which is the development branch rather
+than a release; `./mutint upgrade --check` would then offer you an older tag.
 
 An existing clone that predates a submodule:
 

@@ -3,7 +3,18 @@
 # Install MutInt.
 #
 #   curl -LO https://raw.githubusercontent.com/mutint/mutint/main/install.sh
-#   sh install.sh
+#   sh install.sh              # the latest release
+#   sh install.sh v0.0.1       # that release
+#   sh install.sh main         # the development branch
+#
+# **It installs a release, not whatever `main` happens to be.** A plain clone takes the tip of
+# the default branch, which is a moving target and is not what anybody means by "install
+# MutInt"; worse, it lands a fresh installation on an untagged commit while `data/upgrade.json`
+# defaults to the `stable` channel, so /upgrade/ immediately offers the newest *tag* -- which
+# may be behind the commit just installed. So this asks the remote for its release tags the
+# same way `mutint_common/upgrade.py` does (`git ls-remote --tags`, no API, no token) and
+# clones the highest one. Asking for `main` writes the channel to match, so the installation
+# goes on following the branch it was installed from.
 #
 # Documented as download-then-run rather than `curl | sh`, so this can be read before it does
 # anything. It is short on purpose: its only job is to get far enough to clone. Everything
@@ -26,6 +37,15 @@ set -eu
 
 REPO="${MUTINT_REPO:-https://github.com/mutint/mutint.git}"
 TARGET="${MUTINT_DIR:-mutint}"
+
+# The version to install: the first argument, else MUTINT_VERSION, else the latest release tag
+# once there is a git to ask with. `main` is named rather than inferred from the default
+# branch, so what gets installed never depends on where the remote points HEAD.
+MAIN_BRANCH=main
+VERSION="${MUTINT_VERSION:-}"
+if [ $# -gt 0 ]; then
+    VERSION="$1"
+fi
 
 if [ -e "${TARGET}" ]; then
     echo "'${TARGET}' already exists here." >&2
@@ -69,17 +89,65 @@ else
     GIT="${BOOTSTRAP}/git/bin/git"
 fi
 
+# ── which version ────────────────────────────────────────────────────────────────────────
+
+# The highest `v<numbers>` tag on the remote, or nothing if it has none. The pattern is as
+# strict as upgrade.py's TAG_RE on purpose: a tag namespace accumulates release candidates and
+# `testdata-*` assets, and an install should land on a reviewed point or not at all. Versions
+# are compared component-wise rather than as strings, so v0.10.0 beats v0.2.0; `sort -V` would
+# do it in one word and is not on every host this has to run on.
+highest_tag() {
+    sed -e 's|^.*refs/tags/||' \
+        | awk '
+            /^v[0-9]+(\.[0-9]+)*$/ {
+                n = split(substr($0, 2), part, ".")
+                key = ""
+                for (i = 1; i <= 4; i++)
+                    key = key sprintf("%010d", (i <= n) ? part[i] : 0)
+                if (key > best_key) { best_key = key; best = $0 }
+            }
+            END { if (best != "") print best }'
+}
+
+if [ -z "${VERSION}" ]; then
+    echo "Asking ${REPO} which versions it has..."
+    # "could not ask" and "there is nothing to install" are kept apart here, the same way
+    # upgrade.py keeps Unreachable apart from an empty answer: falling back to the branch
+    # because the network was busy would install something nobody chose.
+    if ! TAGS="$("${GIT}" ls-remote --tags --refs "${REPO}" 'v*')"; then
+        echo "Could not reach ${REPO}." >&2
+        exit 1
+    fi
+    VERSION="$(printf '%s\n' "${TAGS}" | highest_tag)"
+    if [ -z "${VERSION}" ]; then
+        echo "It has no release tags yet; installing the tip of ${MAIN_BRANCH} instead."
+        VERSION="${MAIN_BRANCH}"
+    fi
+fi
+
 # ── the clone ────────────────────────────────────────────────────────────────────────────
 
 # --recurse-submodules is not optional: the six components are submodules, and without their
 # contents config/settings.py discovers no apps at all and fails saying nothing about it.
-echo "Cloning MutInt..."
-"${GIT}" clone --recurse-submodules "${REPO}" "${TARGET}"
+#
+# --branch takes a tag as happily as a branch, and leaves HEAD detached on one -- which is
+# where an installation belongs, and is what makes `./mutint upgrade` see a version rather
+# than a bare SHA.
+echo "Cloning MutInt ${VERSION}..."
+"${GIT}" clone --recurse-submodules --branch "${VERSION}" "${REPO}" "${TARGET}"
 
 cleanup
 BOOTSTRAP=""
 
 cd "${TARGET}"
+
+# Installing the development branch means following it. The upgrade state defaults to the
+# `stable` channel, which would otherwise offer the newest release tag to a checkout that is
+# deliberately ahead of it. `data/` is the directory the entry script would create anyway.
+if [ "${VERSION}" = "${MAIN_BRANCH}" ]; then
+    mkdir -p data
+    printf '{\n  "channel": "main"\n}\n' > data/upgrade.json
+fi
 
 echo ""
 echo "Starting MutInt. The first run installs Python, the external tools and PostgreSQL"

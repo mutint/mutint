@@ -20,11 +20,22 @@ one for itself rather than asking you to install developer tools first.
 Downloaded and then run, rather than piped straight into a shell, so you can read it before
 it does anything.
 
+**It installs the latest release**, not the tip of `main`. Name a version to get a different
+one:
+
+```bash
+sh install.sh v0.0.1       # that release
+sh install.sh main         # the development branch, and follow it thereafter
+```
+
 ### Or clone it yourself
 
 ```bash
-git clone --recurse-submodules https://github.com/mutint/mutint.git
+git clone --recurse-submodules --branch v0.0.1 https://github.com/mutint/mutint.git
 ```
+
+Without `--branch` you get the tip of `main`, which is a development branch rather than a
+release.
 
 The `--recurse-submodules` is not optional -- without it the component directories are empty
 and `config/settings.py` finds no apps to install. If you already cloned without it:
