@@ -87,19 +87,40 @@ is nothing to activate.
 Two files in the checkout do the same thing without a terminal:
 
 - **`Start MutInt.command`** — double-click it and macOS opens a Terminal window and runs
-  `./mutint start` in it.
+  `./mutint start` in it. The server runs *in* that window, so Ctrl-C stops it and closing the
+  window will offer to.
 - **`MutInt.app`** — the same launcher with an application's name and icon, so it can sit in
-  the Dock. All it does is open the `.command` above in Terminal; the first time, macOS asks
-  once for permission to control Terminal.
+  the Dock. **The app is MutInt**, not a shortcut to it: it runs the server itself, its icon
+  stays in the Dock for as long as MutInt is up, and quitting it stops the server.
 
-The Terminal window is the point rather than an artifact. A first launch spends several minutes
-installing the venv and the external tools before Django is importable, and the admin
-credentials are printed once — a launcher that hid that would make a slow success look like a
-hang and a failure look like nothing. **Ctrl-C in that window stops the server**, and closing
-the window will offer to.
+Both run the same script; the app just tells it there is no terminal to print to.
 
-Double-clicking again while MutInt is already running just opens the browser: the dev server
-is fixed to port 8000, so a second one would only collide with the first.
+### The window the app opens is a log viewer
+
+A first launch spends several minutes installing the venv and the external tools before Django
+is importable, and the admin credentials are printed once — a launcher that hid all that would
+make a slow success look like a hang and a failure look like nothing. So the app writes
+everything to **`data/server.log`** and opens a Terminal window showing it as it is written.
+The first time, macOS asks once for permission to control Terminal.
+
+That window holds nothing but `tail`, which is the whole point: **closing it does not stop
+MutInt**. Quit the app to do that. The log is a file you can reopen later, or attach to a bug
+report, and the previous run is kept beside it as `data/server.log.1`.
+
+Clicking the icon again while MutInt is already running opens the browser rather than starting
+a second server — the dev server is fixed to port 8000, so a second one would only collide with
+the first. (macOS will not run two copies of an application anyway; the check is there because
+the `.command` and the app can be used against each other.)
+
+### If macOS asks for the Command Line Tools
+
+`./mutint` is a Python script, so *something* has to be a Python before the checkout has
+installed its own — and on a Mac that has never had Xcode, `/usr/bin/python3` is not a Python
+at all. It is a stub whose only job is to offer to install Apple's Command Line Tools.
+
+MutInt checks for that before it starts and offers the installer in a dialog rather than
+failing silently. It is a one-time cost: after MutInt has run once it has a Python of its own
+in `env/python`, uses that from then on, and never asks again.
 
 !!! note "Both are plain text, and neither is signed"
 
