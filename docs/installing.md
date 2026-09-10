@@ -120,9 +120,10 @@ the `.command` and the app can be used against each other.)
 
 `/upgrade/` stages a new version, and the upgrade itself happens on the next launch, before
 the server comes up — a running MutInt cannot safely replace its own code. Started from the
-app, the page offers **Restart MutInt**, which is that launch: it stops the server, waits for
-it to finish shutting down, and opens the app again. The page reloads itself when MutInt is
-back.
+app, the staged-upgrade message carries a **Restart MutInt** button, which is that launch: it
+stops the server, waits for it to finish shutting down, and opens the app again. The page
+reloads itself when MutInt is back. The button appears only there — it is how you finish an
+upgrade, not a general restart control.
 
 Started from a terminal instead, there is no Restart button. Nothing there can start MutInt
 again once it has been stopped — the shell that would do it is the one being killed — so the
