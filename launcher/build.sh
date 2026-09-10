@@ -59,9 +59,19 @@ set_key() {
 
 # **CFBundleIdentifier is the one osacompile does not write, and it is load-bearing.**
 # LaunchServices keys single-instance behaviour on it -- without one, a second click can start
-# a second MutInt -- and so does the Automation permission, so a bundle that loses its
-# identifier asks again for control of Terminal and forgets it was ever granted.
-set_key CFBundleIdentifier string edu.utexas.barricklab.mutint.launcher
+# a second MutInt.
+#
+# **It is reverse-DNS of a domain this project owns**, mutint.org, rather than of the lab
+# that wrote it: the platform is not any one institution's deployment. Changing it is cheap
+# *while nothing here sends an Apple Event* -- Automation is granted per identifier, so a new
+# one would forget the grant and re-prompt. See NSAppleEventsUsageDescription below: if that
+# key ever has to come back, this line stops being free to edit.
+#
+# Every copy of the bundle claims this identifier, and each `build.sh` run in a throwaway
+# checkout leaves one *registered* with LaunchServices even after the directory is deleted.
+# Enough of those and the Dock resolves a tile from a ghost. `lsregister -dump | grep
+# MutInt.app` lists them; `lsregister -u <path>` drops one.
+set_key CFBundleIdentifier string org.mutint.launcher
 set_key CFBundleName string MutInt
 set_key CFBundleDisplayName string MutInt
 set_key CFBundleShortVersionString string 0.0.1

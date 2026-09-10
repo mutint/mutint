@@ -13,7 +13,7 @@
 	<key>CFBundleIconFile</key>
 	<string>MutInt</string>
 	<key>CFBundleIdentifier</key>
-	<string>edu.utexas.barricklab.mutint.launcher</string>
+	<string>org.mutint.launcher</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
