@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 345.40 79.9">
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 345.4 79.9">
   <!-- Generator: Adobe Illustrator 30.8.1, SVG Export Plug-In . SVG Version: 2.1.4 Build 1)  -->
   <defs>
     <style>
       .st0 {
         fill: #2f9e5f;
-      }
-
-      .st1 {
-        fill: #101512;
       }
 
       .st1, .st2 {
@@ -36,59 +32,65 @@
         fill: #1139cc;
       }
 
-      .st5, .st6, .st7, .st8, .st9 {
-        stroke: #7c4bd3;
-      }
-
-      .st5, .st8 {
+      .st5, .st6 {
         stroke-width: 3.7px;
       }
 
-      .st6, .st7 {
-        stroke-width: 3.9px;
+      .st5, .st6, .st7, .st8, .st9 {
+        stroke: #7c4bd3;
       }
 
       .st6, .st8, .st9 {
         fill: #fff;
       }
 
+      .st7, .st8 {
+        stroke-width: 3.9px;
+      }
+
       .st9 {
         stroke-width: 2.8px;
+      }
+
+      .st2 {
+        fill: #101512;
       }
     </style>
   </defs>
   <path class="st4" d="M113,21.2l-11-6"/>
-  <path class="st4" d="M98.4,64.8"/>
-  <path class="st0" d="M21,5.8h47.5c5,0,9,4,9,9h0c0,5-4,9-9,9H21c-5,0-9-4-9-9h0c0-5,4-9,9-9Z"/>
-  <path class="st3" d="M31.4,55.8h40.5c5,0,9,4,9,9h0c0,5-4,9-9,9H31.4c-5,0-9-4-9-9h0c0-5,4-9,9-9Z"/>
+  <path class="st4" d="M97.6,64.8"/>
+  <path class="st0" d="M19.9,5.8h48.6c5,0,9,4,9,9h0c0,5-4,9-9,9H19.9c-5,0-9-4-9-9h0c0-5,4-9,9-9Z"/>
+  <path class="st3" d="M25,55.8h46.9c5,0,9,4,9,9h0c0,5-4,9-9,9H25c-5,0-9-4-9-9h0c0-5,4-9,9-9Z"/>
   <path class="st10" d="M15.5,29.4h39.9c5.7,0,10.4,4.7,10.4,10.4h0c0,5.7-4.7,10.4-10.4,10.4H15.5c-5.7,0-10.4-4.7-10.4-10.4h0c0-5.7,4.7-10.4,10.4-10.4Z"/>
   <g id="evidence">
     <path class="st7" d="M38.7,14.9l49,24.8"/>
     <path class="st7" d="M38.7,39.9l49-.2"/>
-    <path class="st7" d="M45.4,64.9l42.3-25.2"/>
+    <path class="st7" d="M37.7,64.9l50-25.2"/>
   </g>
   <path class="st5" d="M87.7,39.7l20-25"/>
   <path class="st5" d="M87.7,39.7l24.4-1.6"/>
-  <path class="st5" d="M87.7,39.7l10.7,25.1"/>
+  <path class="st5" d="M87.7,39.7l9.9,25.1"/>
   <path class="st5" d="M108.5,15.2l3.6,23"/>
-  <path class="st5" d="M98.4,64.8l13.7-26.7"/>
-  <circle cx="43.8" cy="64.4" r="7.2"/>
+  <path class="st5" d="M97.6,64.8l14.5-26.7"/>
   <circle id="hub" class="st9" cx="86.7" cy="40.5" r="9.5"/>
-  <circle class="st8" cx="107.8" cy="15.4" r="8.7"/>
-  <circle class="st8" cx="112" cy="38.2" r="8"/>
-  <circle class="st8" cx="98.2" cy="64.8" r="8.7"/>
+  <circle class="st6" cx="107.8" cy="15.4" r="8.7"/>
+  <circle class="st6" cx="112" cy="38.2" r="8"/>
+  <circle class="st6" cx="97.4" cy="64.8" r="8.7"/>
   <circle cx="86.8" cy="40.6" r="5.4"/>
-  <circle cx="98.2" cy="64.8" r="3.9"/>
-  <circle class="st6" cx="37.4" cy="39.9" r="9"/>
+  <circle cx="97.4" cy="64.8" r="3.9"/>
+  <circle class="st8" cx="37.4" cy="39.9" r="9"/>
   <circle cx="37.4" cy="39.9" r="4"/>
-  <circle class="st6" cx="37.4" cy="14.7" r="9"/>
+  <circle class="st8" cx="37.4" cy="14.7" r="9"/>
   <circle cx="37.4" cy="14.7" r="4"/>
   <circle cx="112.1" cy="38.2" r="3.6"/>
   <circle cx="108" cy="15.6" r="3.9"/>
-  <circle class="st6" cx="43.6" cy="64.2" r="9"/>
-  <circle cx="43.6" cy="64.2" r="4"/>
-  <g id="wordmark" class="st2">
-    <g class="st2">
+  <g>
+    <circle cx="37.6" cy="64.4" r="7.2"/>
+    <circle class="st8" cx="37.4" cy="64.2" r="9"/>
+    <circle cx="37.4" cy="64.2" r="4"/>
+  </g>
+  <g id="wordmark" class="st1">
+    <g class="st1">
       <g fill="#101512"><path d="M438 323 444 525H435L300 166L165 525H156L162 323V0H48V698H204L301 441H308L406 698H552V0H438Z" transform="translate(128.7000 62.8000) scale(0.060000 -0.060000)"/><path d="M397 91H392Q375 49 339.5 18.5Q304 -12 241 -12Q165 -12 117.5 38.5Q70 89 70 183V516H198V201Q198 89 295 89Q314 89 332.5 94.0Q351 99 365.5 109.5Q380 120 388.5 135.0Q397 150 397 171V516H525V0H397Z" transform="translate(164.7000 62.8000) scale(0.060000 -0.060000)"/><path d="M335 0Q261 0 226.0 39.0Q191 78 191 140V415H41V516H143Q174 516 187.0 528.5Q200 541 200 573V698H319V516H529V415H319V101H529V0Z" transform="translate(200.7000 62.8000) scale(0.060000 -0.060000)"/><path d="M78 0V98H235V600H78V698H522V600H365V98H522V0Z" transform="translate(236.7000 62.8000) scale(0.060000 -0.060000)"/><path d="M75 0V516H203V425H208Q225 467 260.5 497.5Q296 528 359 528Q435 528 482.5 477.5Q530 427 530 333V0H402V315Q402 427 305 427Q285 427 267.0 422.0Q249 417 234.5 406.5Q220 396 211.5 381.0Q203 366 203 345V0Z" transform="translate(272.7000 62.8000) scale(0.060000 -0.060000)"/><path d="M335 0Q261 0 226.0 39.0Q191 78 191 140V415H41V516H143Q174 516 187.0 528.5Q200 541 200 573V698H319V516H529V415H319V101H529V0Z" transform="translate(308.7000 62.8000) scale(0.060000 -0.060000)"/></g>
     </g>
   </g>
