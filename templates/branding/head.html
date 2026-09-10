@@ -11,11 +11,15 @@
    it unspecified which one a 16px tab got, and it was as likely to be the detailed mark as
    the one drawn for that size. The one offered is `icon-16.svg`, the simplified mark: three
    shapes where the full icon has fifteen, because a tab is 16-32px and the detailed one turns
-   to mud there. The `.ico` is for browsers with no SVG icon support and is the only file here
-   that genuinely carries per-size artwork -- simplified at 16 and 32, full at 48.
+   to mud there. The `.ico` is for browsers with no SVG icon support, and carries the same
+   simplified mark at all three of its sizes -- 16, 32 and 48.
 
-   `icon.svg`, the full mark, stays on disk and is deliberately not linked: it is the source
-   the MutInt.app bundle icon is rendered from. {% endcomment %}
+   `icon.svg`, the full mark, stays on disk and is deliberately not linked: it is what the
+   two largest slots of the MutInt.app bundle icon are rendered from, and nothing else. Every
+   other icon this project ships -- the PNGs the manifest and the apple-touch link name above,
+   and every bundle slot up to 256pt -- is the simplified mark, because a home-screen tile and
+   a Dock tile are around the size of a favicon and the detailed mark turns to mud at both.
+   `launcher/build.sh` carries the composition. {% endcomment %}
 <link rel="icon" type="image/x-icon" sizes="32x32" href="{% static "img/mutint/favicon.ico" %}">
 <link rel="icon" type="image/svg+xml" href="{% static "img/mutint/icon-16.svg" %}">
 <link rel="apple-touch-icon" href="{% static "img/mutint/apple-touch-icon.png" %}">

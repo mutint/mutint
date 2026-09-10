@@ -29,10 +29,16 @@ icon="$here/launcher/MutInt.icns"
 #   Render every one of the ten standard slots at its native size from that SVG
 #   rather than resampling a master, then `iconutil -c icns`.
 #
-#   The 16 and 32 physical-pixel slots use icon-16.svg, the simplified mark: three
-#   shapes where the full icon has fifteen. That is the same rule favicon.ico
-#   follows, so the tab icon and the bundle icon agree about where detail stops
-#   being legible. Everything from 64px up uses icon.svg.
+#   Every slot up to 256pt uses icon-16.svg, the simplified mark: three shapes
+#   where the full icon has fifteen. **The Dock is why it reaches that far.** A
+#   Dock tile is around 128pt, and at that size the full mark's three satellite
+#   rings and their connectors collapse into a smudge beside the hub -- legible
+#   as a picture of something, not as this mark. The simplified one is designed
+#   to survive the reduction, and reads at 128 the way it reads at 16.
+#
+#   Only the 512 and 1024 slots use icon.svg. Nothing renders those small: they
+#   are Get Info, Quick Look and the Finder's largest icon view, where the detail
+#   is the point and there is room for it.
 #
 #   Rasterize with a browser engine, not ImageMagick: its built-in SVG renderer
 #   flattens circles to a fixed segment count in user units, and the mark's rings
