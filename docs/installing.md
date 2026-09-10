@@ -102,7 +102,10 @@ A first launch spends several minutes installing the venv and the external tools
 is importable, and the admin credentials are printed once — a launcher that hid all that would
 make a slow success look like a hang and a failure look like nothing. So the app writes
 everything to **`data/server.log`** and opens a Terminal window showing it as it is written.
-The first time, macOS asks once for permission to control Terminal.
+
+That window is opened by handing the file `launcher/view-log.command` to Terminal, which asks
+macOS to open a document and so needs no permission. Double-click that file yourself any time
+to watch the log, whether or not MutInt started it for you.
 
 That window holds nothing but `tail`, which is the whole point: **closing it does not stop
 MutInt**. Quit the app to do that. The log is a file you can reopen later, or attach to a bug
@@ -152,6 +155,12 @@ in `env/python`, uses that from then on, and never asks again.
     Command Line Tools. The icon master is `launcher/MutInt.icns`, composed from the same SVGs
     in `staticfiles/img/mutint/` the site's favicon comes from; `build.sh` records how to
     rebuild it and copies it in, since `osacompile` writes the bundle from scratch every time.
+
+    It asks for no permissions. An earlier version opened its log window by telling Terminal,
+    through AppleScript, to run a command — an Apple Event, so macOS asked *"MutInt wants to
+    control Terminal"* on the first launch. That is an alarming question to put to somebody who
+    double-clicked an icon, and refusing it left them with no window; opening a document with
+    `open -a` does the same job through LaunchServices and asks nothing.
 
     Nothing is signed beyond an ad-hoc signature. A clone carries no quarantine attribute, so
     Gatekeeper lets it run; a copy downloaded through a browser would not be so lucky.

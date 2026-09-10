@@ -81,15 +81,15 @@ fi
 # The window, when we are the app: a *viewer* on the log, holding nothing but `tail`.
 # Closing it costs nothing, which is the entire point of the arrangement -- the window used
 # to be the server, so closing it was how people killed MutInt by accident.
+#
+# **`open -a` rather than AppleScript, and that is the whole reason the viewer is a file.**
+# Telling Terminal to run a command is an Apple Event, so the first launch asked *"MutInt
+# wants to control Terminal"* -- a frightening question to put to somebody who has just
+# double-clicked an icon to look at some mutations, and refusing it left them with no window
+# at all. Opening a *document* with a named application goes through LaunchServices instead:
+# the same window, no permission, and nothing to refuse.
 if [ -n "$MUTINT_LOG_FILE" ]; then
-    osascript - "$MUTINT_LOG_FILE" >/dev/null 2>&1 <<'APPLESCRIPT'
-on run argv
-    tell application "Terminal"
-        activate
-        do script "clear; echo 'MutInt server log. Closing this window does NOT stop MutInt --'; echo 'quit MutInt from the Dock to do that.'; echo; exec tail -n +1 -f " & quoted form of (item 1 of argv)
-    end tell
-end run
-APPLESCRIPT
+    open -a Terminal "$(pwd)/launcher/view-log.command" >/dev/null 2>&1
 fi
 
 # **Under the app, the server gets a session of its own.** `start.py` arms the deadman

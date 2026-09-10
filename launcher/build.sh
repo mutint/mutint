@@ -61,9 +61,18 @@ set_key CFBundleDisplayName string MutInt
 set_key CFBundleShortVersionString string 0.0.1
 set_key LSMinimumSystemVersion string 10.13
 
-# The sentence macOS shows in the "MutInt wants to control Terminal" prompt. The app drives
-# Terminal to show the server's log; see docs/installing.md.
-set_key NSAppleEventsUsageDescription string "MutInt opens a Terminal window showing its log while it starts."
+# **No NSAppleEventsUsageDescription, deliberately.** Nothing here sends an Apple Event any
+# more -- the log window is opened with `open -a Terminal`, which is LaunchServices opening a
+# document -- so there is no "MutInt wants to control Terminal" prompt to explain. A usage
+# description for a permission the app never asks for is a promise about behaviour it does
+# not have; if anything here ever does send one, this key has to come back or macOS denies
+# it outright.
+#
+# Deleted rather than left alone: osacompile writes its own boilerplate --
+# "This script needs to control other applications to run." -- which is a claim about
+# this app that is no longer true, sitting where anybody inspecting the bundle will read
+# it. Removing the key is the only way to say nothing.
+/usr/libexec/PlistBuddy -c "Delete :NSAppleEventsUsageDescription" "$plist" >/dev/null 2>&1 || true
 
 # osacompile drops its own stock applet icon in; ours is the one CFBundleIconFile names,
 # so that is one binary the repo does not need to carry.

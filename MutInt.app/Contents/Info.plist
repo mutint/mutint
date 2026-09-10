@@ -33,8 +33,6 @@
 	</dict>
 	<key>LSRequiresCarbon</key>
 	<true/>
-	<key>NSAppleEventsUsageDescription</key>
-	<string>MutInt opens a Terminal window showing its log while it starts.</string>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>This script needs access to your music to run.</string>
 	<key>NSCalendarsUsageDescription</key>
