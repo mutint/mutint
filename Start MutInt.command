@@ -92,4 +92,23 @@ end run
 APPLESCRIPT
 fi
 
+# **Under the app, the server gets a session of its own.** `start.py` arms the deadman
+# supervisor's process-group cleanup only when it leads its group -- and launched from an
+# applet it would inherit the *applet's* group, so it would not. That cleanup is what reaps the
+# runserver child, and losing it matters here precisely because the app can SIGKILL this
+# process itself, when a polite stop has run out of time: without it, that leaves a child
+# holding port 8000 and the next launch quietly opens a browser at a server that is not there.
+#
+# Only under the app. Double-clicked in Terminal this must stay in the terminal's own session,
+# or Ctrl-C in that window would no longer reach the server -- which is how the .command has
+# always been stopped.
+if [ -n "$MUTINT_LOG_FILE" ]; then
+    exec "$PYTHON" -c 'import os, sys
+try:
+    os.setsid()
+except OSError:
+    pass          # already a group leader; nothing to detach from
+os.execv(sys.argv[1], sys.argv[1:])' "$PYTHON" ./mutint start
+fi
+
 exec "$PYTHON" ./mutint start

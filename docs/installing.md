@@ -91,7 +91,8 @@ Two files in the checkout do the same thing without a terminal:
   window will offer to.
 - **`MutInt.app`** — the same launcher with an application's name and icon, so it can sit in
   the Dock. **The app is MutInt**, not a shortcut to it: it runs the server itself, its icon
-  stays in the Dock for as long as MutInt is up, and quitting it stops the server.
+  stays in the Dock for as long as MutInt is up, **Quit stops the server**, and clicking the
+  icon while it is running opens the browser.
 
 Both run the same script; the app just tells it there is no terminal to print to.
 
@@ -134,15 +135,29 @@ MutInt checks for that before it starts and offers the installer in a dialog rat
 failing silently. It is a one-time cost: after MutInt has run once it has a Python of its own
 in `env/python`, uses that from then on, and never asks again.
 
-!!! note "Both are plain text, and neither is signed"
+!!! note "How the app is built, and why it is not just a script"
 
-    `MutInt.app` is a folder with an `Info.plist`, a shell script and an icon in it — there is
-    no build step. The icon is a checked-in `Contents/Resources/MutInt.icns`, composed from the
-    same SVGs in `staticfiles/img/mutint/` that the site's favicon comes from; `Info.plist`'s
-    comment records how to rebuild it.
+    `MutInt.app` is an **AppleScript applet**, compiled from `launcher/MutInt.applescript` by
+    `sh launcher/build.sh`. It was a plain shell script for a while, which was simpler and
+    could not be quit: a bundle whose executable is a script has no way to answer the Quit
+    event macOS sends it, so Force Quit was the only way to stop MutInt. An applet's runtime
+    answers that event, and answers a click on the Dock icon too.
 
-    Both rely on their executable bit, which git records. If Finder opens one in a text editor
-    instead of running it, `chmod +x` is the fix.
+    Everything about *starting* MutInt is still `Start MutInt.command`, in plain shell. The
+    applet holds the Dock tile, answers Quit and Reopen, and launches that script exactly as
+    Finder would.
+
+    The compiled bundle is committed, so a clone needs no build. `build.sh` regenerates it —
+    `osacompile` ships with macOS, so unlike the rest of MutInt this needs no Python and no
+    Command Line Tools. The icon master is `launcher/MutInt.icns`, composed from the same SVGs
+    in `staticfiles/img/mutint/` the site's favicon comes from; `build.sh` records how to
+    rebuild it and copies it in, since `osacompile` writes the bundle from scratch every time.
+
+    Nothing is signed beyond an ad-hoc signature. A clone carries no quarantine attribute, so
+    Gatekeeper lets it run; a copy downloaded through a browser would not be so lucky.
+
+    `Start MutInt.command` relies on its executable bit, which git records. If Finder opens it
+    in a text editor instead of running it, `chmod +x` is the fix.
 
 ## Everyday commands
 

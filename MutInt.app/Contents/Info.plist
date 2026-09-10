@@ -2,48 +2,62 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleName</key>
-	<string>MutInt</string>
+	<key>CFBundleAllowMixedLocalizations</key>
+	<true/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
 	<key>CFBundleDisplayName</key>
 	<string>MutInt</string>
 	<key>CFBundleExecutable</key>
-	<string>MutInt</string>
-	<!-- Resources/MutInt.icns, named without its extension, which is what this key
-	     expects. Rebuilding it, since nothing in the repo does: compose each slot on
-	     Apple's 1024pt grid -- an 824x824 plate, corner radius 185.4, centred, filled
-	     #ffffff -- with the mark from staticfiles/img/mutint/ centred on its own ink
-	     bounding box at an extent of 660, i.e. 82pt of plate showing on every side.
-	     Render every one of the ten standard slots at its native size from that SVG
-	     rather than resampling a master, then `iconutil -c icns`.
-
-	     The 16 and 32 physical-pixel slots use icon-16.svg, the simplified mark: three
-	     shapes where the full icon has fifteen. That is the same rule favicon.ico
-	     follows, so the tab icon and the bundle icon agree about where detail stops
-	     being legible. Everything from 64px up uses icon.svg.
-
-	     Rasterize with a browser engine, not ImageMagick: its built-in SVG renderer
-	     flattens circles to a fixed segment count in user units, and the mark's rings
-	     come out visibly polygonal once the composing transform magnifies them.
-	     Supersampling does not hide it. Headless Chrome writes the screenshot and then
-	     hangs on shutdown, so poll for the file and kill it. -->
+	<string>applet</string>
 	<key>CFBundleIconFile</key>
 	<string>MutInt</string>
 	<key>CFBundleIdentifier</key>
 	<string>edu.utexas.barricklab.mutint.launcher</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>MutInt</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>0.0.1</string>
+	<key>CFBundleSignature</key>
+	<string>aplt</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.13</string>
-	<!-- The sentence macOS shows in the "MutInt wants to control Terminal" prompt. The
-	     app drives Terminal on purpose: that window is where the first run's install
-	     log, the admin credentials and any failure are visible. -->
+	<key>LSMinimumSystemVersionByArchitecture</key>
+	<dict>
+		<key>x86_64</key>
+		<string>10.6</string>
+	</dict>
+	<key>LSRequiresCarbon</key>
+	<true/>
 	<key>NSAppleEventsUsageDescription</key>
-	<string>MutInt opens a Terminal window so you can watch the server start.</string>
+	<string>MutInt opens a Terminal window showing its log while it starts.</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>This script needs access to your music to run.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>This script needs access to your calendars to run.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This script needs access to your camera to run.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This script needs access to your contacts to run.</string>
+	<key>NSHomeKitUsageDescription</key>
+	<string>This script needs access to your HomeKit Home to run.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This script needs access to your microphone to run.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This script needs access to your photos to run.</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>This script needs access to your reminders to run.</string>
+	<key>NSSiriUsageDescription</key>
+	<string>This script needs access to Siri to run.</string>
+	<key>NSSystemAdministrationUsageDescription</key>
+	<string>This script needs access to administer this system to run.</string>
+	<key>OSAAppletShowStartupScreen</key>
+	<false/>
+	<key>OSAAppletStayOpen</key>
+	<true/>
 </dict>
 </plist>
