@@ -50,4 +50,16 @@ fi
 
 MUTINT_LOG_FILE="$log"
 export MUTINT_LOG_FILE
+
+# How to start MutInt again, for /upgrade/'s Restart button. Core knows nothing about macOS
+# or about bundles: it runs whatever this says, and offers the button only where something
+# said it -- from a terminal nothing does, because the process that would run the command is
+# the one being killed. See mutint_upgrade/restart.py.
+#
+# Single-quoted with any embedded quote escaped the POSIX way, because it is handed to
+# `sh -c` and a checkout path may contain spaces. The bundle rather than `-a MutInt`: this
+# starts the copy that is actually running, not whichever one LaunchServices would find.
+quoted_app="'$(printf '%s' "$here/MutInt.app" | sed "s/'/'\\''/g")'"
+MUTINT_RELAUNCH_COMMAND="/usr/bin/open $quoted_app"
+export MUTINT_RELAUNCH_COMMAND
 exec "$here/Start MutInt.command" >>"$log" 2>&1
