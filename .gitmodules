@@ -46,3 +46,7 @@
 	path = mutint-api
 	url = ../mutint-api
 	branch = main
+[submodule "mutint-isescan"]
+	path = mutint-isescan
+	url = ../mutint-isescan
+	branch = main
