@@ -203,10 +203,10 @@ def _install():
     python = _install_python()
     # A venv cannot be re-based on a different interpreter, so an interpreter change means
     # building a new one. Left alone, a checkout that already has env/main would keep running
-    # the old Python for ever and the upgrade would land for nobody.
+    # the old Python for ever and the update would land for nobody.
     #
     # Compared by *version*, not by path, and that distinction is the whole of this check:
-    # env/main/bin/python is a symlink into env/python, so upgrading that prefix in place
+    # env/main/bin/python is a symlink into env/python, so updating that prefix in place
     # re-points the venv at the new interpreter while its packages stay in the old
     # lib/pythonX.Y. The venv then has no pip and no Django and reports the new version
     # perfectly happily. A path comparison sees nothing wrong, because nothing moved.
@@ -247,7 +247,7 @@ def _core_module(name):
     discovered the way tools.txt already is, so it resolves standalone and assembled with
     nothing to configure.
 
-    Only `pg.py` and `upgrade.py` are loaded this way, and both are written to the constraints
+    Only `pg.py` and `update.py` are loaded this way, and both are written to the constraints
     that implies: standard library only, nothing from Django, and parseable on whatever
     python3 the host happens to have. Their own test modules assert all three, because nothing
     else would catch a violation until somebody ran this on a machine with an older Python.
@@ -268,8 +268,8 @@ def _pg():
     return _core_module('pg')
 
 
-def _apply_staged_upgrade():
-    """Apply an upgrade staged by /upgrade/, before anything here reads a requirements.txt.
+def _apply_staged_update():
+    """Apply an update staged by /update/, before anything here reads a requirements.txt.
 
     **Placement is the whole design.** The venv and tools sentinels hash the contents of every
     component's requirements.txt and tools.txt, so moving the working tree at this point means
@@ -282,19 +282,21 @@ def _apply_staged_upgrade():
     part-way through the checkout, a new requirements.txt cannot be installed into the
     environment currently executing, and migrations would run against half-swapped code.
 
-    Never raises. A launch that refuses to start because an upgrade failed leaves somebody
+    Never raises. A launch that refuses to start because an update failed leaves somebody
     with no MutInt at all, which is worse than an old one and a message; the failure is
-    recorded in data/upgrade.json and reported by /upgrade/.
+    recorded in data/update.json and reported by /update/.
     """
     # The state file is checked *first*, and without loading anything, so the overwhelmingly
     # common case -- nothing ever staged here -- costs one stat and cannot fail at all. That
     # also means a checkout whose mutint-core predates this feature launches normally: it only
-    # reaches the loader when there is genuinely an upgrade to apply.
-    state_file = os.path.join(BASE_DIR, 'data', 'upgrade.json')
-    if not os.path.isfile(state_file):
+    # reaches the loader when there is genuinely an update to apply.
+    # Either name: the file was `upgrade.json` while the feature was called upgrading, and
+    # `update.py` moves it across on first read.
+    if not any(os.path.isfile(os.path.join(BASE_DIR, 'data', name))
+               for name in ('update.json', 'upgrade.json')):
         return
     try:
-        _core_module('upgrade').apply_staged(BASE_DIR, pg=_pg())
+        _core_module('update').apply_staged(BASE_DIR, pg=_pg())
     except (Exception, SystemExit) as exc:
         # `SystemExit` explicitly, because `_core_module` raises it when the module is not
         # there -- and `except Exception` does not catch it, SystemExit deriving from
@@ -302,9 +304,9 @@ def _apply_staged_upgrade():
         # than its mutint-core, which is what every submodule bump passes through.
         #
         # Broad otherwise, and deliberately: this runs before anything else on every `start`,
-        # and a launch that refuses because an upgrade failed leaves somebody with no MutInt
-        # at all. The failure is recorded in data/upgrade.json and reported by /upgrade/.
-        print("Could not apply the staged upgrade: %s" % exc)
+        # and a launch that refuses because an update failed leaves somebody with no MutInt
+        # at all. The failure is recorded in data/update.json and reported by /update/.
+        print("Could not apply the staged update: %s" % exc)
 
 
 def _ensure_database(own=True):
@@ -384,9 +386,9 @@ else:
     if os.path.normpath(sys.prefix) != os.path.normpath(_VENV):
         # Before the sentinel check, so a new version's requirements.txt and tools.txt are the
         # ones the install below reads. Only for `start`: that is the verb that also migrates,
-        # and code newer than the schema is the one state an upgrade must never leave behind.
+        # and code newer than the schema is the one state an update must never leave behind.
         if _verb == 'start':
-            _apply_staged_upgrade()
+            _apply_staged_update()
         if not _sentinel_matches(_VENV_READY, _requirements_payload()):
             _install()
         # A checkout whose venv predates tools.txt, or whose earlier solve failed, still

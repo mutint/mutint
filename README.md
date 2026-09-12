@@ -44,7 +44,7 @@ and `config/settings.py` finds no apps to install. If you already cloned without
 git submodule update --init
 ```
 
-Either way you end up with a git checkout, which is what lets MutInt **upgrade itself in
+Either way you end up with a git checkout, which is what lets MutInt **update itself in
 place** later, keeping the data in `data/`.
 
 ---
@@ -73,20 +73,20 @@ The admin interface is at `http://127.0.0.1:8000/admin/`. Change the default pas
 
 ---
 
-## Upgrading
+## Updating
 
-MutInt upgrades itself in place, keeping your data. Sign in as a superuser, click your
-username in the sidebar, then **Upgrade** &mdash; it lists what is installed, checks for a
+MutInt updates itself in place, keeping your data. Sign in as a superuser, click your
+username in the sidebar, then **Update** &mdash; it lists what is installed, checks for a
 newer version, and stages it. Quit MutInt and start it again to apply it.
 
 From a terminal:
 
 ```bash
-./mutint upgrade --check    # what is available
-./mutint upgrade            # move onto it, then run ./mutint start
+./mutint update --check    # what is available
+./mutint update            # move onto it, then run ./mutint start
 ```
 
-See `docs/using/upgrading.md` (or `./mutint docs --serve`) for the two channels, the backup it
+See `docs/using/updating.md` (or `./mutint docs --serve`) for the two channels, the backup it
 takes first, and what it refuses to do to a checkout somebody is working in.
 
 ---

@@ -85,8 +85,8 @@ on startServer()
         do shell script "[ -s " & quotedLog & " ] && mv -f " & quotedLog & " " & quotedLog & ".1 || true"
     end try
 
-    -- How to start MutInt again, for /upgrade/'s Restart button. Core runs whatever this says
-    -- and offers the button only where something said it; see mutint_upgrade/restart.py.
+    -- How to start MutInt again, for /update/'s Restart button. Core runs whatever this says
+    -- and offers the button only where something said it; see mutint_update/restart.py.
     set relaunch to "/usr/bin/open " & quoted form of (POSIX path of (path to me))
 
     -- Backgrounded, because an applet cannot hold a child process the way a shell can -- which

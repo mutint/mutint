@@ -1,7 +1,7 @@
 # Installing MutInt
 
-**MutInt is installed as a git checkout, and that is not incidental.** It upgrades itself in
-place -- see [Upgrading](upgrading.md) -- and it can only do that from a repository it can
+**MutInt is installed as a git checkout, and that is not incidental.** It updates itself in
+place -- see [Updating](updating.md) -- and it can only do that from a repository it can
 fetch into. There is no tarball, on purpose: unpacking one over an installation that already
 holds data has no safe answer, since the database in `data/db` and the file store in
 `data/store` live inside the directory you would be replacing.
@@ -10,7 +10,7 @@ Note also that GitHub's own **source archive of this repository will not work**.
 are submodules, so the archive contains six *empty* directories, and `config/settings.py`
 discovers `INSTALLED_APPS` by scanning them -- it would find nothing and fail in a way that
 says nothing about submodules. (If you have already ended up in that state,
-`./mutint upgrade --adopt` turns such a tree into a real checkout without touching your data.)
+`./mutint update --adopt` turns such a tree into a real checkout without touching your data.)
 
 ## The install script
 
@@ -32,7 +32,7 @@ It is downloaded and then run, rather than piped into a shell, so you can read i
 ### Which version it installs
 
 **The latest release, not the tip of `main`.** The script asks the remote for its `v*` tags
-the same way [Upgrading](upgrading.md) does -- `git ls-remote`, no API and no token -- and
+the same way [Updating](updating.md) does -- `git ls-remote`, no API and no token -- and
 clones the highest one, leaving `HEAD` detached on it. Name a version to override that:
 
 ```bash
@@ -43,7 +43,7 @@ sh install.sh main         # the development branch
 `MUTINT_VERSION` does the same thing for a script being run non-interactively, beside the
 `MUTINT_REPO` and `MUTINT_DIR` it already reads.
 
-Asking for `main` also writes the `main` channel into `data/upgrade.json`, so the installation
+Asking for `main` also writes the `main` channel into `data/update.json`, so the installation
 goes on following the branch it was installed from. Without that it would sit on the default
 `stable` channel and be offered the newest *release tag* -- which is behind the development
 branch, so the offer would be a downgrade.
@@ -60,7 +60,7 @@ cd mutint
 ```
 
 Without `--branch` a clone takes the tip of `main`, which is the development branch rather
-than a release; `./mutint upgrade --check` would then offer you an older tag.
+than a release; `./mutint update --check` would then offer you an older tag.
 
 An existing clone that predates a submodule:
 
@@ -116,14 +116,14 @@ a second server — the dev server is fixed to port 8000, so a second one would 
 the first. (macOS will not run two copies of an application anyway; the check is there because
 the `.command` and the app can be used against each other.)
 
-### Upgrading from the Dock
+### Updating from the Dock
 
-`/upgrade/` stages a new version, and the upgrade itself happens on the next launch, before
+`/update/` stages a new version, and the update itself happens on the next launch, before
 the server comes up — a running MutInt cannot safely replace its own code. Started from the
-app, the staged-upgrade message carries a **Restart MutInt** button, which is that launch: it
+app, the staged-update message carries a **Restart MutInt** button, which is that launch: it
 stops the server, waits for it to finish shutting down, and opens the app again. The page
 reloads itself when MutInt is back. The button appears only there — it is how you finish an
-upgrade, not a general restart control.
+update, not a general restart control.
 
 Started from a terminal instead, there is no Restart button. Nothing there can start MutInt
 again once it has been stopped — the shell that would do it is the one being killed — so the
