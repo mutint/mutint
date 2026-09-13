@@ -159,8 +159,13 @@ def _install_tools():
     # instead of failing on a directory that is already there. Note neither one *removes* a
     # spec that was deleted from a tools.txt -- `rm -rf env/tools` is how you do that.
     action = 'install' if os.path.isdir(os.path.join(_TOOLS, 'conda-meta')) else 'create'
+    # Flat repodata, not micromamba 2's sharded index. bioconda's shard index lags its
+    # repodata.json: the day isescan's osx-arm64 build appeared, `micromamba search` found
+    # it and `micromamba install` said it did not exist, and no TTL setting helped because
+    # the index itself had not been regenerated. A tool that bioconda has must install.
+    env = dict(os.environ, MAMBA_USE_SHARDED_REPODATA='false')
     subprocess.check_call([_micromamba(), action, '-y', '-p', _TOOLS,
-                           '-c', 'conda-forge', '-c', 'bioconda'] + specs)
+                           '-c', 'conda-forge', '-c', 'bioconda'] + specs, env=env)
     # Written last, as env/main/.installed is: a solve that dies partway must not look
     # complete on the next run.
     _write_sentinel(_TOOLS_READY, payload)
