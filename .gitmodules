@@ -50,3 +50,7 @@
 	path = mutint-isescan
 	url = ../mutint-isescan
 	branch = main
+[submodule "mutint-refsniff"]
+	path = mutint-refsniff
+	url = ../mutint-refsniff
+	branch = main
