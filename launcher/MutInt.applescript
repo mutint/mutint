@@ -37,8 +37,27 @@ end run
 -- A click on the Dock icon while MutInt is running. This is what a shell-script bundle could
 -- not do at all -- LaunchServices sends the event and nothing answers it, so the click did
 -- nothing. Opening the browser is what clicking a running MutInt obviously means.
+--
+-- **And it is also how /update/'s Restart button gets its server back, half the time.** That
+-- button's helper kills the server and then runs `open` on this bundle -- but only three
+-- seconds later, while `on idle` below notices a dead server on a *five* second tick. When we
+-- have not noticed yet, LaunchServices finds the app running and sends this, not `on run`. A
+-- handler that only opened a browser answered that with a tab pointed at the server it had
+-- just killed, and then `on idle` quit the app: MutInt vanished and nothing restarted it.
+-- Starting one when there is none makes both orderings work, and costs nothing in the case
+-- this was written for -- a running MutInt still just gets the browser.
 on reopen
-    do shell script "/usr/bin/open http://127.0.0.1:8000"
+    if serverPid is 0 or not isRunning(serverPid) then
+        try
+            startServer()
+        on error message
+            display dialog "MutInt could not start." & return & return & message ¬
+                with title "MutInt" buttons {"OK"} default button "OK" with icon stop
+            quit
+        end try
+    else
+        do shell script "/usr/bin/open http://127.0.0.1:8000"
+    end if
 end reopen
 
 -- **The app is MutInt, so it does not outlive the server.** `Start MutInt.command` exits
