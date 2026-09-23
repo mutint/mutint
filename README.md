@@ -2,6 +2,8 @@
 
 An integrated environment for predicting, curating, and learning from mutations in microbial genomes.
 
+MutInt's [core](https://github.com/mutint/mutint-core) is a fork of [AleDB](https://github.com/Aletechdev/aledb).
+
 _This project is in very early development! We recommend updating often to get bug fixes and new features._
 
 ## Installation
