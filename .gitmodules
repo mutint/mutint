@@ -54,3 +54,7 @@
 	path = mutint-refsniff
 	url = ../mutint-refsniff
 	branch = main
+[submodule "mutint-fastqc"]
+	path = mutint-fastqc
+	url = ../mutint-fastqc
+	branch = main
