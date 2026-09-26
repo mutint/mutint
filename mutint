@@ -23,18 +23,32 @@ _PY_DIR = os.path.join(BASE_DIR, 'env', 'python')
 _PY_READY = os.path.join(_PY_DIR, '.installed')
 _PYTHON_SPEC = 'python=3.13.*'
 
-_submodule_paths = []
-_gitmodules = os.path.join(BASE_DIR, '.gitmodules')
-if os.path.isfile(_gitmodules):
-    _cfg = configparser.ConfigParser()
-    _cfg.read(_gitmodules)
-    for _section in _cfg.sections():
-        _path = _cfg.get(_section, 'path', fallback=None)
-        if _path:
-            _full = os.path.join(BASE_DIR, _path)
-            _submodule_paths.append(_full)
-            if _full not in sys.path:
-                sys.path.append(_full)
+
+def _discover_submodules():
+    """Every component .gitmodules lists, each put on sys.path. Returns their directories.
+
+    A function rather than a block because it is asked twice: once here, and again after
+    `./mutint start` applies a staged update -- which can add a component or remove one. The
+    requirements and tools sentinels hash only the components this list names, so a list read
+    before the update misses a new plugin's tools.txt, finds the sentinel unchanged, and
+    installs nothing; mutint-fastqc arrived without FastQC exactly that way.
+    """
+    paths = []
+    gitmodules = os.path.join(BASE_DIR, '.gitmodules')
+    if os.path.isfile(gitmodules):
+        cfg = configparser.ConfigParser()
+        cfg.read(gitmodules)
+        for section in cfg.sections():
+            path = cfg.get(section, 'path', fallback=None)
+            if path:
+                full = os.path.join(BASE_DIR, path)
+                paths.append(full)
+                if full not in sys.path:
+                    sys.path.append(full)
+    return paths
+
+
+_submodule_paths = _discover_submodules()
 
 # Where the code finds the binaries at runtime. Exported here rather than derived in settings
 # because settings cannot know it: an assembled project reaches get_base_settings() through
@@ -394,6 +408,10 @@ else:
         # and code newer than the schema is the one state an update must never leave behind.
         if _verb == 'start':
             _apply_staged_update()
+            # What the update left on disk, not what this process read before it moved the
+            # tree: every function below walks this list, and a component it does not name is
+            # a requirements.txt and a tools.txt nobody installs.
+            _submodule_paths = _discover_submodules()
         if not _sentinel_matches(_VENV_READY, _requirements_payload()):
             _install()
         # A checkout whose venv predates tools.txt, or whose earlier solve failed, still
