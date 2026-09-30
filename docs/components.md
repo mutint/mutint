@@ -1,6 +1,6 @@
 # What is inside it
 
-MutInt installs mutint-core plus four analysis plugins. Each is a separate repository, pinned
+MutInt installs mutint-core plus the plugins below. Each is a separate repository, pinned
 here as a submodule, and each contributes its own pages to this manual — so the sections beside
 this one are an inventory of what this deployment actually has.
 
@@ -12,6 +12,10 @@ this one are an inventory of what this deployment actually has.
 | **mutint-needle** | the needle plot, as a panel on the Overview |
 | **mutint-breseq** | breseq runs on uploaded reads, queued for the background worker |
 | **mutint-api** | the public read API at `/api/`, for another MutInt to pull public data from |
+| **mutint-isescan** | ISEScan on the reference genome, merging the IS elements it predicts into the annotation |
+| **mutint-refsniff** | identifying the reference genome from a sample of reads, before an experiment has one |
+| **mutint-fastqc** | FastQC reports on the reads a breseq run is made from, linked from each sample |
+| **mutint-specificity** | the Specificity page: whether evolution was specific to each treatment |
 
 `/about` in a running instance is the live version of this table: it reports every installed
 component with its version and git revision, so it is accurate for *your* checkout in a way

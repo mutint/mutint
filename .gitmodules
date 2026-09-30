@@ -58,3 +58,7 @@
 	path = mutint-fastqc
 	url = ../mutint-fastqc
 	branch = main
+[submodule "mutint-specificity"]
+	path = mutint-specificity
+	url = ../mutint-specificity
+	branch = main
