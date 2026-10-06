@@ -28,6 +28,11 @@
 	url = ../mutint-compare
 	branch = main
 
+[submodule "mutint-recurrent"]
+	path = mutint-recurrent
+	url = ../mutint-recurrent
+	branch = main
+
 [submodule "mutint-phylogeny"]
 	path = mutint-phylogeny
 	url = ../mutint-phylogeny
