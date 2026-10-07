@@ -33,6 +33,11 @@
 	url = ../mutint-recurrent
 	branch = main
 
+[submodule "mutint-circos"]
+	path = mutint-circos
+	url = ../mutint-circos
+	branch = main
+
 [submodule "mutint-phylogeny"]
 	path = mutint-phylogeny
 	url = ../mutint-phylogeny
