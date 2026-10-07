@@ -1,8 +1,8 @@
 # MutInt
 
-An integrated environment for predicting, curating, and learning from mutations in microbial genomes.
+An interactive environment for predicting, curating, and learning from mutations in microbial genomes.
 
-MutInt's [core](https://github.com/mutint/mutint-core) is a fork of [AleDB](https://github.com/Aletechdev/aledb).
+MutInt's [core](https://github.com/mutint/mutint-core) is a fork of [ALEdb](https://github.com/Aletechdev/aledb).
 
 _This project is in very early development! We recommend updating often to get bug fixes and new features._
 
@@ -60,17 +60,17 @@ On first run, MutInt will automatically:
 
 Expect the first run to take several minutes while these components install. The next time you restart, it should be quicker.
 
-Once you have MutInt showing in your web browser, you should log in as `admin` with password `admin`. Right now no version of MutInt allows connections from another computer, but you can change this default password (and create new users) if you wish.
+Once you have MutInt showing in your web browser, you should log in as `admin` with password `admin`. Right now no version of MutInt allows connections from another computer, but you can change this default password and create new users with restricted permissions, if you wish.
 
 ## Updating MutInt
 
 MutInt updates itself in place and is designed to keep your data intact across updates.
 
-To update Mutint, sign in as a superuser (like the default `admin` user), click your username in the sidebar, then click **Update**. The update page that shows lists what plugin components are installed, and has a button to check for never newer versions of MutInt and all of its plugins.
+To update Mutint, sign in as a superuser (like the default `admin` user), click your username in the sidebar, then click **Update**. The update page lists what plugins are installed, and it has a button to check for newer versions of MutInt and all of its plugins.
 
-Right now, while things are very new, we recommend choosing the "Development Releases" menu option for updates rather than the "Official Releases".
+Right now, while things are very new, we recommend choosing the "Development Releases" menu option for updates rather than the "Official Releases" and updating often.
 
-After you update there will be a button that quits MutInt so that the next time you launch it the updates are installed. If you started it from the MacOSX App, then it will automatically relaunch itself.
+After you update, there will be a button to stop or restart MutInt. If you started it from the MacOSX App, then it will automatically relaunch itself. If you started it in a different way, then you should kill that process and relaunch MutInt.
 
 If you'd like to update from the terminal instead:
 ```bash
@@ -79,18 +79,18 @@ If you'd like to update from the terminal instead:
 ./mutint start             # Applies the update and starts MutInt
 ```
 
-If things seem to get stuck or you encounter any weirdness, the best thing to do is to stop MutInt by quitting the app of the `./mutint start` process and start it again.
+If things seem to get stuck or you encounter any weirdness during an update, the best thing to do is to stop MutInt by quitting the app or killing the `./mutint start` process and start it again.
 
-## Getting Started
+## Getting Started Using MutInt
 
 In brief:
 1. Create a Project.
 2. Create an Experiment in this Project.
 3. Add a Reference Genome to the Experiment.
 4. Import mutation calls from GenomeDiff or VCF files OR run _breseq_ to predict mutations from FASTQ files.
-5. Analyze and visualize your mutation calls to learn from them.
+5. Analyze and visualize your mutation calls to learn from them using the plugins linked from the sidebar under your experiment.
 
-More to be added soon!
+More details to be added soon!
 
 ## Management
 
