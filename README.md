@@ -16,7 +16,7 @@ However, depending on how you are importing data, you may need much more disk sp
 
 ### Easy Install
 
-Download and run this installation script on MacOSX or Linux.
+Download and run this installation script on macOS, Linux, or Windows under WSL.
 
 ```bash
 curl -LO https://raw.githubusercontent.com/mutint/mutint/main/install.sh
@@ -43,9 +43,9 @@ git submodule update --init
 
 ## Starting MutInt
 
-If you are on MacOSX, you should be able to double-click the App icon. It will perform the install steps described below and then open MutInt in your default web browser. If you are on Linux, you may be able to double-click the `Start MutInt.command` script to get the same initialization steps to run automatically.
+If you are on macOS, you should be able to double-click the App icon. It will perform the install steps described below and then open MutInt in your default web browser. On Linux or Windows under WSL, run `./mutint start` in a terminal instead; it performs the same steps and opens your browser (under WSL, the Windows one). The `Start MutInt.command` script and the App are macOS-only.
 
-If not, you can navigate to the repository directory and run this command on either platform:
+On any platform, you can navigate to the repository directory and run this command:
 ```bash
 ./mutint start
 ```
