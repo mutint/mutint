@@ -38,14 +38,8 @@ end run
 -- not do at all -- LaunchServices sends the event and nothing answers it, so the click did
 -- nothing. Opening the browser is what clicking a running MutInt obviously means.
 --
--- **And it is also how /update/'s Restart button gets its server back, half the time.** That
--- button's helper kills the server and then runs `open` on this bundle -- but only three
--- seconds later, while `on idle` below notices a dead server on a *five* second tick. When we
--- have not noticed yet, LaunchServices finds the app running and sends this, not `on run`. A
--- handler that only opened a browser answered that with a tab pointed at the server it had
--- just killed, and then `on idle` quit the app: MutInt vanished and nothing restarted it.
--- Starting one when there is none makes both orderings work, and costs nothing in the case
--- this was written for -- a running MutInt still just gets the browser.
+-- A click on a Dock icon whose server has died (the `on idle` tick below has up to five
+-- seconds to notice and quit) starts one rather than opening a tab onto nothing.
 on reopen
     if serverPid is 0 or not isRunning(serverPid) then
         try
@@ -104,10 +98,6 @@ on startServer()
         do shell script "[ -s " & quotedLog & " ] && mv -f " & quotedLog & " " & quotedLog & ".1 || true"
     end try
 
-    -- How to start MutInt again, for /update/'s Restart button. Core runs whatever this says
-    -- and offers the button only where something said it; see mutint_update/restart.py.
-    set relaunch to "/usr/bin/open " & quoted form of (POSIX path of (path to me))
-
     -- Backgrounded, because an applet cannot hold a child process the way a shell can -- which
     -- is the one thing given up by moving off the shell script, and what `deadman` below buys
     -- back. `echo $!` hands back the pid: the .command `exec`s the server, so that number stays
@@ -115,8 +105,9 @@ on startServer()
     -- `launchCommand`, not `launch`: that is a Standard Additions command, and assigning to
     -- it compiles cleanly and then fails at runtime with "Can't set launch to ...", which is
     -- an error dialog on somebody's screen rather than anything a build would catch.
+    -- /update/'s Restart button needs nothing from here: the server restarts itself in place,
+    -- same pid, so `serverPid` stays right across it (mutint_update/restart.py).
     set launchCommand to "MUTINT_LOG_FILE=" & quotedLog & " " & ¬
-        "MUTINT_RELAUNCH_COMMAND=" & quoted form of relaunch & " " & ¬
         quoted form of (root & "/Start MutInt.command") & " >> " & quotedLog & " 2>&1 & echo $!"
     set serverPid to (do shell script launchCommand) as integer
 

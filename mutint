@@ -407,6 +407,10 @@ else:
         # ones the install below reads. Only for `start`: that is the verb that also migrates,
         # and code newer than the schema is the one state an update must never leave behind.
         if _verb == 'start':
+            # On a restart asked for from /update/ this process is the same pid that owned
+            # the cluster a moment ago, exec'd over itself (mutint_update/restart.py), so the
+            # cluster is still running here and update.backup() takes its pg_dump before the
+            # tree moves. Started cold, it is not, and the backup is skipped.
             _apply_staged_update()
             # What the update left on disk, not what this process read before it moved the
             # tree: every function below walks this list, and a component it does not name is

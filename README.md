@@ -70,7 +70,7 @@ To update Mutint, sign in as a superuser (like the default `admin` user), click 
 
 Right now, while things are very new, we recommend choosing the "Development Releases" menu option for updates rather than the "Official Releases" and updating often.
 
-After you update, there will be a button to stop or restart MutInt. If you started it from the MacOSX App, then it will automatically relaunch itself. If you started it in a different way, then you should kill that process and relaunch MutInt.
+Once an update is available, the page offers **Restart to install updates**: MutInt stops, installs the update and starts itself again, and the page reloads when it is back. This works however you started it — from the macOS App, or from `./mutint start` in a terminal on Linux or Windows under WSL, where the same terminal shows the new launch.
 
 If you'd like to update from the terminal instead:
 ```bash
