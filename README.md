@@ -56,17 +56,17 @@ On first run, MutInt will automatically:
 3. Install external tools components need using Conda (`env/tools/`)
 4. Start PostgreSQL for database support.
 5. Create a default admin user (`admin` / `admin`)
-6. Open your default web browser to `http://127.0.0.1:8000`
+6. Open your default web browser to `http://127.0.0.1:8000`, signed in as `admin`
 
 Expect the first run to take several minutes while these components install. The next time you restart, it should be quicker.
 
-Once you have MutInt showing in your web browser, you should log in as `admin` with password `admin`. Right now no version of MutInt allows connections from another computer, but you can change this default password and create new users with restricted permissions, if you wish.
+MutInt opens signed in as `admin`: while that is the only account, a page opened from this computer needs no password. Right now no version of MutInt allows connections from another computer. If you log out, the password is `admin`. You can change it, and create new users with restricted permissions, from Django admin under **Manage** in the sidebar; once a second user exists, everyone is asked to log in.
 
 ## Updating MutInt
 
 MutInt updates itself in place and is designed to keep your data intact across updates.
 
-To update Mutint, sign in as a superuser (like the default `admin` user), click your username in the sidebar, then click **Update**. The update page lists what plugins are installed, and it has a button to check for newer versions of MutInt and all of its plugins.
+To update Mutint, sign in as a superuser (like the default `admin` user), click **Manage** in the sidebar, then click **Update**. The update page lists what plugins are installed, and it has a button to check for newer versions of MutInt and all of its plugins.
 
 Right now, while things are very new, we recommend choosing the "Development Releases" menu option for updates rather than the "Official Releases" and updating often.
 
